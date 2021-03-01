@@ -1,0 +1,1 @@
+web: java -Dspring.data.mongodb.host=${MONGODB_HOST} -Dspring.data.mongodb.username=${MONGODB_USERNAME} -Dspring.data.mongodb.password=${MONGODB_PASSWORD} -jar build/libs/*.jar
