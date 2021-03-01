@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class StatusResource {
+
     @GetMapping("/status")
-    public String ping() {
+    public String status() {
         return "RUNNING";
     }
+
 }
