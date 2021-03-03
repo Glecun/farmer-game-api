@@ -42,4 +42,8 @@ public class UserJson {
     public User toUser() {
         return new User(username,email,password);
     }
+
+    public static UserJson fromUser(User user) {
+        return new UserJson(user.getUsername(),user.getEmail(), null);
+    }
 }
