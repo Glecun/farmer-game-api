@@ -18,7 +18,10 @@ public class MarketInfoJson {
 
    public static MarketInfoJson from(MarketInfo marketInfo) {
       return new MarketInfoJson(
-            marketInfo.onSaleSeeds.stream().map(OnSaleSeedJson::from).collect(Collectors.toList()),
+            marketInfo.onSaleSeeds.stream()
+                  .sorted((seed1, seed2) -> (int) (seed1.seedEnum.seed.growthTime.growthTime - seed2.seedEnum.seed.growthTime.growthTime))
+                  .map(OnSaleSeedJson::from)
+                  .collect(Collectors.toList()),
             marketInfo.marketTime
       );
    }
