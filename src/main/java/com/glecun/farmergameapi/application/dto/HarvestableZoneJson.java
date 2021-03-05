@@ -18,4 +18,8 @@ public class HarvestableZoneJson {
               harvestableZone.getSeedsPlanted().map(OnSaleSeedJson::from).orElse(null)
         );
     }
+
+    public HarvestableZone toHarvestableZone() {
+        return new HarvestableZone(harvestableZoneType,seedsPlanted.toOnSaleSeed());
+    }
 }

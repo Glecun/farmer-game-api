@@ -16,6 +16,10 @@ public class HarvestableZone {
         return Optional.ofNullable(seedsPlanted);
     }
 
+    public boolean hasType(HarvestableZoneType harvestableZoneTypeToCompare) {
+        return harvestableZoneType.name().equals(harvestableZoneTypeToCompare.name());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -27,5 +31,14 @@ public class HarvestableZone {
     @Override
     public int hashCode() {
         return Objects.hash(harvestableZoneType, getSeedsPlanted());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("HarvestableZone{");
+        sb.append("harvestableZoneType=").append(harvestableZoneType);
+        sb.append(", seedsPlanted=").append(seedsPlanted);
+        sb.append('}');
+        return sb.toString();
     }
 }

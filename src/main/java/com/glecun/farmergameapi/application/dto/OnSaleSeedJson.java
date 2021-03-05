@@ -2,6 +2,7 @@ package com.glecun.farmergameapi.application.dto;
 
 import java.time.LocalDateTime;
 import com.glecun.farmergameapi.domain.entities.OnSaleSeed;
+import com.glecun.farmergameapi.domain.entities.SeedEnum;
 
 public class OnSaleSeedJson {
    public final SeedEnumJson seedEnum;
@@ -29,5 +30,16 @@ public class OnSaleSeedJson {
             onSaleSeed.timeLeft(),
             onSaleSeed.willBeSoldDate
       );
+   }
+
+   public OnSaleSeed toOnSaleSeed() {
+      return OnSaleSeed.builder()
+              .seedEnum(SeedEnum.valueOf(seedEnum.name()))
+              .buyPrice(buyPrice)
+              .sellPrice(sellPrice)
+              .demand(demand.toDemand())
+              .willBeSoldDate(willBeSoldDate)
+              .onSaleDate(null)
+              .build();
    }
 }

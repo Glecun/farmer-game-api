@@ -14,7 +14,8 @@ public class UserInfoMongo {
     public final double money;
     public final List<HarvestableZoneMongo> harvestableZones;
 
-    public UserInfoMongo(String email, double money, List<HarvestableZoneMongo> harvestableZones) {
+    public UserInfoMongo(String id, String email, double money, List<HarvestableZoneMongo> harvestableZones) {
+        this.id = id;
         this.email = email;
         this.money = money;
         this.harvestableZones = harvestableZones;
@@ -22,6 +23,7 @@ public class UserInfoMongo {
 
     public static UserInfoMongo from(UserInfo userInfo) {
         return new UserInfoMongo(
+              userInfo.id,
               userInfo.email,
               userInfo.money,
               userInfo.harvestableZones.stream().map(HarvestableZoneMongo::from).collect(Collectors.toList())
@@ -30,6 +32,7 @@ public class UserInfoMongo {
 
     public UserInfo toUserInfo() {
         return new UserInfo(
+              id,
               email,
               money,
               harvestableZones.stream().map(HarvestableZoneMongo::toHarvestableZone).collect(Collectors.toList())
