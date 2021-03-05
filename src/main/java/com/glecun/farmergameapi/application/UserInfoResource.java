@@ -1,5 +1,6 @@
 package com.glecun.farmergameapi.application;
 
+import com.glecun.farmergameapi.application.dto.HarvestableZoneJson;
 import com.glecun.farmergameapi.application.dto.MarketInfoJson;
 import com.glecun.farmergameapi.application.dto.UserInfoJson;
 import com.glecun.farmergameapi.application.dto.UserJson;
@@ -7,9 +8,7 @@ import com.glecun.farmergameapi.domain.ApplicationDomain;
 import com.glecun.farmergameapi.domain.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("user-info")
@@ -28,4 +27,11 @@ public class UserInfoResource {
         return UserInfoJson.from(applicationDomain.getUserInfo(user.getEmail()));
 
     }
+
+    @PostMapping("/plant-in-a-zone/")
+    public UserInfoJson plantInAZone(@RequestBody HarvestableZoneJson harvestableZoneJson, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return UserInfoJson.from(applicationDomain.plantInAZone(harvestableZoneJson.toHarvestableZone(), user));
+    }
+
 }

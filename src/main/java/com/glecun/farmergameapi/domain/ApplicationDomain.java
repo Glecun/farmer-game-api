@@ -1,10 +1,8 @@
 package com.glecun.farmergameapi.domain;
 
 import java.util.Optional;
-import com.glecun.farmergameapi.domain.entities.GrowthTime;
-import com.glecun.farmergameapi.domain.entities.MarketInfo;
-import com.glecun.farmergameapi.domain.entities.User;
-import com.glecun.farmergameapi.domain.entities.UserInfo;
+
+import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,17 @@ public class ApplicationDomain {
     }
 
     public UserInfo getUserInfo(String email) {
-        return userInfoPort.findByEmail(email)
-              .orElseGet(() -> userInfoPort.save(UserInfo.createUserInfo(email)));
+        return userInfoPort.findByEmail(email).orElseGet(() -> userInfoPort.save(UserInfo.createUserInfo(email)));
+    }
+
+    public UserInfo plantInAZone(HarvestableZone harvestableZone, User user) {
+        return userInfoPort.findByEmail(user.getEmail())
+                .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
+                .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone))
+                .map(userInfo -> userInfo.DeduceMoney(
+                        harvestableZone.getSeedsPlanted().map(onSaleSeed -> onSaleSeed.buyPrice).orElseThrow(() -> {throw new RuntimeException("Try to plant in a zone without specify onSaleSeed");})
+                ))
+                .map(userInfoPort::save)
+                .orElseThrow( () -> {throw new RuntimeException("Cannot return UserInfo while plantInAZone");});
     }
 }

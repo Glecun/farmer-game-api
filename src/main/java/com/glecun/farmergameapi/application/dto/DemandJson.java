@@ -16,4 +16,8 @@ public class DemandJson {
    public static DemandJson from(Demand demand) {
       return new DemandJson(demand.demandType, demand.nbDemand);
    }
+
+   public Demand toDemand() {
+      return new Demand(demandType, nbDemand);
+   }
 }

@@ -22,7 +22,10 @@ public class OnSaleSeed {
     }
 
     public long timeLeft() {
-        return LocalDateTime.now().until(onSaleDate.plusSeconds(Double.valueOf(seedEnum.seed.growthTime.minGrowthTime * 60).longValue()), ChronoUnit.SECONDS);
+        if(onSaleDate != null){
+            return LocalDateTime.now().until(onSaleDate.plusSeconds(Double.valueOf(seedEnum.seed.growthTime.minGrowthTime * 60).longValue()), ChronoUnit.SECONDS);
+        }
+        return 0;
     }
 
     public static Builder builder() {
