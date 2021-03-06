@@ -5,21 +5,21 @@ import com.glecun.farmergameapi.domain.entities.HarvestableZoneType;
 
 public class HarvestableZoneJson {
     public final HarvestableZoneType harvestableZoneType;
-    public final OnSaleSeedJson seedsPlanted;
+    public final HarvestablePlantedJson harvestablePlanted;
 
-    public HarvestableZoneJson(HarvestableZoneType harvestableZoneType, OnSaleSeedJson seedsPlanted) {
+    public HarvestableZoneJson(HarvestableZoneType harvestableZoneType, HarvestablePlantedJson harvestablePlanted) {
         this.harvestableZoneType = harvestableZoneType;
-        this.seedsPlanted = seedsPlanted;
+        this.harvestablePlanted = harvestablePlanted;
     }
 
     public static HarvestableZoneJson from(HarvestableZone harvestableZone) {
         return new HarvestableZoneJson(
               harvestableZone.harvestableZoneType,
-              harvestableZone.getSeedsPlanted().map(OnSaleSeedJson::from).orElse(null)
+              harvestableZone.getHarvestablePlanted().map(HarvestablePlantedJson::from).orElse(null)
         );
     }
 
     public HarvestableZone toHarvestableZone() {
-        return new HarvestableZone(harvestableZoneType,seedsPlanted.toOnSaleSeed());
+        return new HarvestableZone(harvestableZoneType, harvestablePlanted.toHarvestableZone());
     }
 }

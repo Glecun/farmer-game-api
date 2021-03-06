@@ -44,7 +44,10 @@ public class ApplicationDomain {
                 .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
                 .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone))
                 .map(userInfo -> userInfo.DeduceMoney(
-                        harvestableZone.getSeedsPlanted().map(onSaleSeed -> onSaleSeed.buyPrice).orElseThrow(() -> {throw new RuntimeException("Try to plant in a zone without specify onSaleSeed");})
+                        harvestableZone.getHarvestablePlanted()
+                                .map(harvestablePlanted -> harvestablePlanted.seedsPlanted)
+                                .map(onSaleSeed -> onSaleSeed.buyPrice)
+                                .orElseThrow(() -> {throw new RuntimeException("Try to plant in a zone without specify onSaleSeed");})
                 ))
                 .map(userInfoPort::save)
                 .orElseThrow( () -> {throw new RuntimeException("Cannot return UserInfo while plantInAZone");});

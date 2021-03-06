@@ -42,8 +42,8 @@ class GetCurrentMarketInfoTest {
 
    @Test
    void should_remove_old_market_info() {
-      var marketInfoOld1 = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now());
-      var marketInfoOld2 = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now());
+      var marketInfoOld1 = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now().minusSeconds(1));
+      var marketInfoOld2 = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now().minusSeconds(1));
       var marketInfoCurrent = new MarketInfo("3", Collections.emptyList(), LocalDateTime.now());
 
       when(marketInfoPort.getMarketInfos()).thenReturn(List.of(

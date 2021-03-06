@@ -5,15 +5,15 @@ import java.util.Optional;
 
 public class HarvestableZone {
     public final HarvestableZoneType harvestableZoneType;
-    private final OnSaleSeed seedsPlanted;
+    private final HarvestablePlanted harvestablePlanted;
 
-    public HarvestableZone(HarvestableZoneType harvestableZoneType, OnSaleSeed seedsPlanted) {
+    public HarvestableZone(HarvestableZoneType harvestableZoneType, HarvestablePlanted harvestablePlanted) {
         this.harvestableZoneType = harvestableZoneType;
-        this.seedsPlanted = seedsPlanted;
+        this.harvestablePlanted = harvestablePlanted;
     }
 
-    public Optional<OnSaleSeed> getSeedsPlanted() {
-        return Optional.ofNullable(seedsPlanted);
+    public Optional<HarvestablePlanted> getHarvestablePlanted() {
+        return Optional.ofNullable(harvestablePlanted);
     }
 
     public boolean hasType(HarvestableZoneType harvestableZoneTypeToCompare) {
@@ -25,19 +25,20 @@ public class HarvestableZone {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HarvestableZone that = (HarvestableZone) o;
-        return harvestableZoneType == that.harvestableZoneType && Objects.equals(getSeedsPlanted(), that.getSeedsPlanted());
+        return harvestableZoneType == that.harvestableZoneType &&
+                Objects.equals(harvestablePlanted, that.harvestablePlanted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(harvestableZoneType, getSeedsPlanted());
+        return Objects.hash(harvestableZoneType, harvestablePlanted);
     }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("HarvestableZone{");
         sb.append("harvestableZoneType=").append(harvestableZoneType);
-        sb.append(", seedsPlanted=").append(seedsPlanted);
+        sb.append(", harvestablePlanted=").append(harvestablePlanted);
         sb.append('}');
         return sb.toString();
     }

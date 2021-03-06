@@ -64,9 +64,10 @@ class ApplicationDomainTest {
               .onSaleDate(null)
               .willBeSoldDate(LocalDateTime.now())
               .build();
+      LocalDateTime now = LocalDateTime.now();
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              seedsPlanted
+              new HarvestablePlanted(seedsPlanted, now)
       );
 
       applicationDomain.plantInAZone(harvestableZone, user);
@@ -74,7 +75,7 @@ class ApplicationDomainTest {
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
                  if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1)){
-                    return new HarvestableZone(harvestableZoneType, seedsPlanted);
+                    return new HarvestableZone(harvestableZoneType, new HarvestablePlanted(seedsPlanted, now));
                  }
                  return new HarvestableZone(harvestableZoneType, null);
               })
@@ -127,7 +128,7 @@ class ApplicationDomainTest {
               .build();
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              seedsPlanted
+              new HarvestablePlanted(seedsPlanted, LocalDateTime.now())
       );
 
       assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);
