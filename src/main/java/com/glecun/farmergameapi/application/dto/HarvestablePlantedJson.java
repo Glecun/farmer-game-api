@@ -27,7 +27,7 @@ public class HarvestablePlantedJson {
         return new HarvestablePlanted(
                 seedsPlanted.toOnSaleSeed(),
                 whenPlanted,
-                infoSale != null ? infoSale.toInfoSale() : null
+                null
                 );
     }
 }

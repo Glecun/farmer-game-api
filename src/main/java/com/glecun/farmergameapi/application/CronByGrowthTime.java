@@ -4,7 +4,9 @@ import com.glecun.farmergameapi.domain.ApplicationDomain;
 import com.glecun.farmergameapi.domain.entities.GrowthTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CronByGrowthTime {
 
     private final ApplicationDomain applicationDomain;
