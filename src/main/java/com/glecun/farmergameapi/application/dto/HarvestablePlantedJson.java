@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class HarvestablePlantedJson {
     public final OnSaleSeedJson seedsPlanted;
     public final LocalDateTime whenPlanted;
-    private final InfoSaleJson infoSale;
+    public final InfoSaleJson infoSale;
 
     public HarvestablePlantedJson(OnSaleSeedJson seedsPlanted, LocalDateTime whenPlanted, InfoSaleJson infoSale) {
         this.seedsPlanted = seedsPlanted;
