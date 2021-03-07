@@ -1,19 +1,22 @@
 package com.glecun.farmergameapi.domain;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.glecun.farmergameapi.domain.entities.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,7 +70,7 @@ class ApplicationDomainTest {
       LocalDateTime now = LocalDateTime.now();
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, now)
+              new HarvestablePlanted(seedsPlanted, now, null)
       );
 
       applicationDomain.plantInAZone(harvestableZone, user);
@@ -75,7 +78,7 @@ class ApplicationDomainTest {
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
                  if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1)){
-                    return new HarvestableZone(harvestableZoneType, new HarvestablePlanted(seedsPlanted, now));
+                    return new HarvestableZone(harvestableZoneType, new HarvestablePlanted(seedsPlanted, now, null));
                  }
                  return new HarvestableZone(harvestableZoneType, null);
               })
@@ -128,7 +131,7 @@ class ApplicationDomainTest {
               .build();
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, LocalDateTime.now())
+              new HarvestablePlanted(seedsPlanted, LocalDateTime.now(), null)
       );
 
       assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);

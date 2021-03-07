@@ -3,6 +3,7 @@ package com.glecun.farmergameapi.domain.entities;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UserInfo {
@@ -64,5 +65,39 @@ public class UserInfo {
 
     public UserInfo DeduceMoney(Integer amountMoney) {
         return new UserInfo(id, email, money - amountMoney, harvestableZones);
+    }
+
+    public UserInfo AddMoney(Integer amountMoney) {
+        return new UserInfo(id, email, money + amountMoney, harvestableZones);
+    }
+
+    public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmpty(SeedEnum seedEnum) {
+        return harvestableZones.stream()
+                .map(HarvestableZone::getHarvestablePlanted)
+                .flatMap(Optional::stream)
+                .anyMatch(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum && harvestablePlanted.getInfoSale().isEmpty());
+    }
+
+    public UserInfo SetInfoSale(HarvestableZone harvestableZoneToUpdate, InfoSale infoSaleToReplace) {
+        List<HarvestableZone> newHarvestablesZones = harvestableZones.stream().map(harvestableZone -> {
+            if (harvestableZone.hasType(harvestableZoneToUpdate.harvestableZoneType)) {
+                return new HarvestableZone(
+                        harvestableZone.harvestableZoneType,
+                        harvestableZone.getHarvestablePlanted().map(harvestablePlanted -> new HarvestablePlanted(harvestablePlanted.seedsPlanted, harvestablePlanted.whenPlanted, infoSaleToReplace)).orElseThrow()
+                );
+            }
+            return harvestableZone;
+        }).collect(Collectors.toList());
+
+        return new UserInfo(id, email, money, newHarvestablesZones);
+    }
+
+    public boolean hasStillHarvestableSold(SeedEnum seedEnum) {
+        return harvestableZones.stream()
+                .map(HarvestableZone::getHarvestablePlanted)
+                .flatMap(Optional::stream)
+                .map(HarvestablePlanted::getInfoSale)
+                .flatMap(Optional::stream)
+                .anyMatch(infoSale -> infoSale.nbHarvestableSold > 0);
     }
 }

@@ -13,13 +13,16 @@ public class ApplicationDomain {
     private final SignUp signUp;
     private final GetCurrentMarketInfo getCurrentMarketInfo;
     private final GenerateMarketInfos generateMarketInfos;
+    private final ResolveSales resolveSales;
+
     private final UserInfoPort userInfoPort;
 
     @Autowired
-    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, UserInfoPort userInfoPort) {
+    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, UserInfoPort userInfoPort) {
         this.signUp = signUp;
         this.getCurrentMarketInfo = getCurrentMarketInfo;
         this.generateMarketInfos = generateMarketInfos;
+        this.resolveSales = resolveSales;
         this.userInfoPort = userInfoPort;
     }
 
@@ -51,5 +54,9 @@ public class ApplicationDomain {
                 ))
                 .map(userInfoPort::save)
                 .orElseThrow( () -> {throw new RuntimeException("Cannot return UserInfo while plantInAZone");});
+    }
+
+    public void resolveSales(GrowthTime growthTime) {
+        resolveSales.execute(growthTime);
     }
 }
