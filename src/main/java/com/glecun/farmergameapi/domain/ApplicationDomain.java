@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationDomain {
 
+    public static final int NB_OF_FAKE_USERS = 10;
+    public static final int NB_OF_ZONE = 24; //TODO dynamically calculate this when add lock and other zones
+
     private final SignUp signUp;
     private final GetCurrentMarketInfo getCurrentMarketInfo;
     private final GenerateMarketInfos generateMarketInfos;

@@ -2,6 +2,7 @@ package com.glecun.farmergameapi.domain;
 
 import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.MarketInfoPort;
+import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +27,8 @@ class GenerateMarketInfosTest {
     private MarketInfoPort marketInfoPort;
     @Mock
     private GetCurrentMarketInfo getCurrentMarketInfo;
+    @Mock
+    private UserInfoPort userInfoPort;
 
     @InjectMocks
     private GenerateMarketInfos generateMarketInfos;

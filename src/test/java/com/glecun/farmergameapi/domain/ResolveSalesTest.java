@@ -2,6 +2,8 @@ package com.glecun.farmergameapi.domain;
 
 import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -9,6 +11,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -32,6 +35,11 @@ class ResolveSalesTest {
 
     @Captor
     ArgumentCaptor<List<UserInfo>> userInfoCaptor;
+
+    @BeforeEach
+    void beforeEach(){
+        ReflectionTestUtils.setField(resolveSales, "fakeUserUsed", false);
+    }
 
     @Test
     void should_resolve_sales_when_everyone_satisfied() {

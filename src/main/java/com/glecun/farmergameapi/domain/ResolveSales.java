@@ -5,17 +5,20 @@ import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
+import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_ZONE;
 
 @Service
 public class ResolveSales {
 
     private final UserInfoPort userInfoPort;
+    private boolean fakeUserUsed = true;
+
     @Autowired
     public ResolveSales(UserInfoPort userInfoPort) {
         this.userInfoPort = userInfoPort;
@@ -32,8 +35,8 @@ public class ResolveSales {
 
         if (!userConcerned.isEmpty()) {
             OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
-            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned);
-            int nbFarmer = userConcerned.size();
+            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake() : 0);
+            int nbFarmer = userConcerned.size() + (fakeUserUsed ? NB_OF_FAKE_USERS : 0);
 
             List<UserInfo> userInfosToUpdate = userConcerned.stream()
                     .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo))
@@ -109,6 +112,9 @@ public class ResolveSales {
     private List<UserInfo> maybeReduceSales(List<UserInfo> userInfosToUpdate, int nbHarvestableNotSold, SeedEnum seedEnum, OnSaleSeed onSaleSeedConcerned) {
         List<UserInfo> updatedUserInfosToUpdate = new ArrayList<>(userInfosToUpdate);
         for (int i = 0 ; i < nbHarvestableNotSold ; i++) {
+            if (isFakeUserNeedToReduce(updatedUserInfosToUpdate) && fakeUserUsed){
+                continue;
+            }
             UserInfo randomUserInfo;
             do {
                 randomUserInfo = updatedUserInfosToUpdate.stream().skip((int) (userInfosToUpdate.size() * Math.random())).findAny().orElseThrow();
@@ -148,5 +154,19 @@ public class ResolveSales {
             }).collect(Collectors.toList());
         }
         return updatedUserInfosToUpdate;
+    }
+
+    private boolean isFakeUserNeedToReduce(List<UserInfo> updatedUserInfosToUpdate) {
+        int nbUsers = updatedUserInfosToUpdate.size();
+        return new Random().nextInt(nbUsers + NB_OF_FAKE_USERS) >= nbUsers;
+    }
+
+    private int nbOfZoneFakeUsersTake() {
+        List<Integer> nbOfZoneList = Arrays.asList(NB_OF_ZONE/2, NB_OF_ZONE);
+        return IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1))
+                .filter(value -> new Random().nextInt(2) == 0)
+                .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
+                .reduce(0, Integer::sum);
+
     }
 }
