@@ -50,6 +50,7 @@ public class ApplicationDomain {
                 .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
                 .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone))
                 .map(userInfo -> userInfo.DeduceMoney(
+                        harvestableZone.harvestableZoneType.nbOfZone *
                         harvestableZone.getHarvestablePlanted()
                                 .map(harvestablePlanted -> harvestablePlanted.seedsPlanted)
                                 .map(onSaleSeed -> onSaleSeed.buyPrice)

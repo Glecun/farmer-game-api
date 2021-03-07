@@ -86,7 +86,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
               "1",
               "greg.lol@mdr.fr",
-              195,
+              140,
               expectedHarvestableZones
       );
 
