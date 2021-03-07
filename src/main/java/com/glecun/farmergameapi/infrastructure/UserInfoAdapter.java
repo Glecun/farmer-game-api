@@ -7,7 +7,9 @@ import com.glecun.farmergameapi.infrastructure.repo.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserInfoAdapter implements UserInfoPort {
@@ -27,5 +29,16 @@ public class UserInfoAdapter implements UserInfoPort {
     @Override
     public UserInfo save(UserInfo userInfo) {
         return userInfoRepository.save(UserInfoMongo.from(userInfo)).toUserInfo();
+    }
+
+    @Override
+    public List<UserInfo> findAll() {
+        return userInfoRepository.findAll().stream().map(UserInfoMongo::toUserInfo).collect(Collectors.toList());
+    }
+
+    @Override
+    public void saveAll(List<UserInfo> userInfos) {
+        userInfoRepository.saveAll(userInfos.stream().map(UserInfoMongo::from).collect(Collectors.toList()));
+
     }
 }
