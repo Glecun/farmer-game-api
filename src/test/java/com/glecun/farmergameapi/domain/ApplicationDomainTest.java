@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,9 +66,9 @@ class ApplicationDomainTest {
               .sellPrice(10)
               .demand(new Demand(DemandType.SmallDemand, 5))
               .onSaleDate(null)
-              .willBeSoldDate(LocalDateTime.now())
+              .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
-      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
       InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, false, 0, 0);
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
@@ -129,11 +130,11 @@ class ApplicationDomainTest {
               .sellPrice(10)
               .demand(new Demand(DemandType.SmallDemand, 5))
               .onSaleDate(null)
-              .willBeSoldDate(LocalDateTime.now())
+              .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, LocalDateTime.now(), null)
+              new HarvestablePlanted(seedsPlanted, LocalDateTime.now(ZoneOffset.UTC), null)
       );
 
       assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);
@@ -147,13 +148,13 @@ class ApplicationDomainTest {
             .sellPrice(10)
             .demand(new Demand(DemandType.SmallDemand, 5))
             .onSaleDate(null)
-            .willBeSoldDate(LocalDateTime.now())
+            .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
             .build();
       HarvestableZone harvestableZone = new HarvestableZone(
             HarvestableZoneType.ZONE_1,
             new HarvestablePlanted(
                   seedsPlanted,
-                  LocalDateTime.now(),
+                  LocalDateTime.now(ZoneOffset.UTC),
                   new InfoSale(5, 25, 5, true, 10, 5 )
             )
       );

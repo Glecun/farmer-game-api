@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,9 +28,9 @@ class GetCurrentMarketInfoTest {
 
    @Test
    void should_get_current_market_info() {
-      var marketInfoFirst = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now());
-      var marketInfoSecond = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now());
-      var marketInfoThird = new MarketInfo("3", Collections.emptyList(), LocalDateTime.now());
+      var marketInfoFirst = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC));
+      var marketInfoSecond = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC));
+      var marketInfoThird = new MarketInfo("3", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC));
 
       when(marketInfoPort.getMarketInfos()).thenReturn(List.of(
             marketInfoSecond, marketInfoThird, marketInfoFirst
@@ -42,9 +43,9 @@ class GetCurrentMarketInfoTest {
 
    @Test
    void should_remove_old_market_info() {
-      var marketInfoOld1 = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now().minusSeconds(1));
-      var marketInfoOld2 = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now().minusSeconds(1));
-      var marketInfoCurrent = new MarketInfo("3", Collections.emptyList(), LocalDateTime.now());
+      var marketInfoOld1 = new MarketInfo("1", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC).minusSeconds(1));
+      var marketInfoOld2 = new MarketInfo("2", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC).minusSeconds(1));
+      var marketInfoCurrent = new MarketInfo("3", Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC));
 
       when(marketInfoPort.getMarketInfos()).thenReturn(List.of(
             marketInfoCurrent, marketInfoOld1, marketInfoOld2

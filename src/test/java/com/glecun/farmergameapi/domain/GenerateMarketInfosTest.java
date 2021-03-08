@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,18 +45,18 @@ class GenerateMarketInfosTest {
                 .demand(new Demand(DemandType.HighDemand, 12))
                 .buyPrice(2000)
                 .sellPrice(4000)
-                .onSaleDate(LocalDateTime.now())
-                .willBeSoldDate(LocalDateTime.now().plusMinutes(1))
+                .onSaleDate(LocalDateTime.now(ZoneOffset.UTC))
+                .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1))
                 .build();
         OnSaleSeed beet = OnSaleSeed.builder()
                 .seedEnum(SeedEnum.BEETS)
                 .demand(new Demand(DemandType.SmallDemand, 2))
                 .buyPrice(20)
                 .sellPrice(30)
-                .onSaleDate(LocalDateTime.now())
-                .willBeSoldDate(LocalDateTime.now().plusMinutes(1))
+                .onSaleDate(LocalDateTime.now(ZoneOffset.UTC))
+                .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1))
                 .build();
-        MarketInfo marketInfo = new MarketInfo("1", List.of(greenBean, beet), LocalDateTime.now());
+        MarketInfo marketInfo = new MarketInfo("1", List.of(greenBean, beet), LocalDateTime.now(ZoneOffset.UTC));
         when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(marketInfo));
 
         generateMarketInfos.execute(GrowthTime.FIRST_GROWTH_TIME);

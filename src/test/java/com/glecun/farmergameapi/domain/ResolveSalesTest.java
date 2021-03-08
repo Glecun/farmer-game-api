@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,7 @@ class ResolveSalesTest {
     @Test
     void should_resolve_sales_when_everyone_satisfied() {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
         var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
@@ -70,7 +71,7 @@ class ResolveSalesTest {
 
     @Test
     void should_reduce_sales_when_everyone_satisfied() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VerySmallDemand, 10)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
         var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
@@ -96,7 +97,7 @@ class ResolveSalesTest {
 
     @Test
     void should_not_erase_InfoSale_when_already_set() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, new InfoSale(10,10,10,true,10,10));
         var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );

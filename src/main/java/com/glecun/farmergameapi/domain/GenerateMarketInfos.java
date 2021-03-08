@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -41,8 +42,8 @@ public class GenerateMarketInfos {
                             .buyPrice(seedEnum.seed.randomizeBuyPrice())
                             .sellPrice(seedEnum.seed.randomizeSellPrice())
                             .demand(randomizeDemand())
-                            .onSaleDate(LocalDateTime.now())
-                            .willBeSoldDate(LocalDateTime.now().plusSeconds(Double.valueOf(growthTime.growthTime * 60).longValue()))
+                            .onSaleDate(LocalDateTime.now(ZoneOffset.UTC))
+                            .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(Double.valueOf(growthTime.growthTime * 60).longValue()))
                             .build()
                 )
                 .collect(Collectors.toList());
@@ -55,7 +56,7 @@ public class GenerateMarketInfos {
 
         List<OnSaleSeed> onSaleSeeds = Stream.concat(onSaleSeedsToUpdate.stream(), onSaleSeedsToKeep.stream()).collect(Collectors.toList());
 
-        marketInfoPort.save(new MarketInfo(null, onSaleSeeds, LocalDateTime.now()));
+        marketInfoPort.save(new MarketInfo(null, onSaleSeeds, LocalDateTime.now(ZoneOffset.UTC)));
     }
 
     Demand randomizeDemand() {

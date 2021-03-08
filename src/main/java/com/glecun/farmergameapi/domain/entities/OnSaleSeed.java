@@ -1,6 +1,7 @@
 package com.glecun.farmergameapi.domain.entities;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public class OnSaleSeed {
 
     public long timeLeft() {
         if(onSaleDate != null){
-            return LocalDateTime.now().until(onSaleDate.plusSeconds(Double.valueOf(seedEnum.seed.growthTime.minGrowthTime * 60).longValue()), ChronoUnit.SECONDS);
+            return LocalDateTime.now(ZoneOffset.UTC).until(onSaleDate.plusSeconds(Double.valueOf(seedEnum.seed.growthTime.minGrowthTime * 60).longValue()), ChronoUnit.SECONDS);
         }
         return 0;
     }
