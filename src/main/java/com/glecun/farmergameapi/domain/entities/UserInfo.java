@@ -62,12 +62,15 @@ public class UserInfo {
         return new UserInfo(id, email, money, profit, newHarvestablesZones);
     }
 
-    public UserInfo DeduceMoney(Integer amountMoney) {
-        return new UserInfo(id, email, money - amountMoney, profit, harvestableZones);
-    }
-
-    public UserInfo AddMoney(Integer amountMoney) {
-        return new UserInfo(id, email, money + amountMoney, profit, harvestableZones);
+    public UserInfo ModifyMoney(Integer amountMoney) {
+        double newMoney = this.money + amountMoney;
+        if (newMoney < 0) {
+            throw new RuntimeException("Cannot have negative money");
+        }
+        if (newMoney < 100) {
+            newMoney = 100;
+        }
+        return new UserInfo(id, email, newMoney, profit, harvestableZones);
     }
 
     public UserInfo AddProfit( int amount) {
