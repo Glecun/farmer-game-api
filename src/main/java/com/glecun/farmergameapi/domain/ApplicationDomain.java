@@ -49,7 +49,7 @@ public class ApplicationDomain {
     public UserInfo plantInAZone(HarvestableZone harvestableZone, User user) {
         return userInfoPort.findByEmail(user.getEmail())
                 .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
-                .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone))
+                .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.nullifyInfoSale()))
                 .map(userInfo -> userInfo.DeduceMoney(
                         harvestableZone.harvestableZoneType.nbOfZone *
                         harvestableZone.getHarvestablePlanted()

@@ -24,6 +24,13 @@ public class HarvestableZone {
         return new HarvestableZone(harvestableZoneType, null);
     }
 
+    public HarvestableZone nullifyInfoSale() {
+        HarvestablePlanted harvestablePlanted = getHarvestablePlanted()
+                .map(harvestablePlanted1 -> new HarvestablePlanted(harvestablePlanted1.seedsPlanted, harvestablePlanted1.whenPlanted, null))
+                .orElseThrow();
+        return new HarvestableZone(harvestableZoneType, harvestablePlanted);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -68,9 +68,10 @@ class ApplicationDomainTest {
               .willBeSoldDate(LocalDateTime.now())
               .build();
       LocalDateTime now = LocalDateTime.now();
+      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, false, 0, 0);
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, now, null)
+              new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity)
       );
 
       applicationDomain.plantInAZone(harvestableZone, user);
