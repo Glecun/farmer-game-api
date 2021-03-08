@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.glecun.farmergameapi.domain.entities.User;
 import com.glecun.farmergameapi.domain.port.UserPort;
 
@@ -44,6 +43,12 @@ class SignUpTest {
    @Test
    void should_not_save_user_when_incorrect_email() {
       var user = new User("grewa", "incorrect email", "lol");
+      Assertions.assertThatThrownBy(() -> signUp.execute(user)).isInstanceOf(RuntimeException.class);
+   }
+
+   @Test
+   void should_not_save_user_when_username_too_long() {
+      var user = new User("lkdjsflsmdjflmqksdjlfjkdjlfksjd", "incorrect email", "lol");
       Assertions.assertThatThrownBy(() -> signUp.execute(user)).isInstanceOf(RuntimeException.class);
    }
 }

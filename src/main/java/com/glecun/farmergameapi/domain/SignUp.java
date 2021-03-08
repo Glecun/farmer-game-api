@@ -22,12 +22,19 @@ public class SignUp {
       if (!isValidEmailAddress(user.getEmail())) {
          throw new RuntimeException(MessageFormat.format("Email: {0} isn't valid", user.getEmail()));
       }
+      if (!isUsernameNotTooLong(user.getUsername())) {
+         throw new RuntimeException(MessageFormat.format("Email: {0} isn't valid", user.getEmail()));
+      }
       final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
       userPort.findByEmail(user.getEmail()).ifPresentOrElse(
             existingUser -> {throw new RuntimeException(MessageFormat.format("User with email: {0} already exists", existingUser.getEmail()));},
             () -> userPort.save(user.setPassword(encryptedPassword))
       );
 
+   }
+
+   private boolean isUsernameNotTooLong(String username) {
+      return username.length() <= 20;
    }
 
    public boolean isValidEmailAddress(String email) {
