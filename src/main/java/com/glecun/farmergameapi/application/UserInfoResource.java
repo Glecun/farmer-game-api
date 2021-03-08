@@ -34,4 +34,9 @@ public class UserInfoResource {
         return UserInfoJson.from(applicationDomain.plantInAZone(harvestableZoneJson.toHarvestableZone(), user));
     }
 
+    @PostMapping("/acknowledge-infosale/")
+    public UserInfoJson acknowledgeInfoSale(@RequestBody HarvestableZoneJson harvestableZoneJson, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return UserInfoJson.from(applicationDomain.acknowledgeInfoSales(harvestableZoneJson.toHarvestableZone(), user));
+    }
 }
