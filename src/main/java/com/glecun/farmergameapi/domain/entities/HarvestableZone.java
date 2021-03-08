@@ -20,6 +20,10 @@ public class HarvestableZone {
         return harvestableZoneType.name().equals(harvestableZoneTypeToCompare.name());
     }
 
+    public HarvestableZone unplant(){
+        return new HarvestableZone(harvestableZoneType, null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

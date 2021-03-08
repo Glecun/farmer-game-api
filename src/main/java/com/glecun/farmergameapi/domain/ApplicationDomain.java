@@ -1,6 +1,7 @@
 package com.glecun.farmergameapi.domain;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
@@ -62,5 +63,18 @@ public class ApplicationDomain {
 
     public void resolveSales(GrowthTime growthTime) {
         resolveSales.execute(growthTime);
+    }
+
+    public UserInfo acknowledgeInfoSales(HarvestableZone harvestableZone, User user) {
+        var harvestable = harvestableZone
+              .getHarvestablePlanted().map(HarvestablePlanted::getInfoSale)
+              .flatMap(Function.identity()).orElseThrow();
+
+        return userInfoPort.findByEmail(user.getEmail())
+              .map(userInfo -> userInfo.AddMoney(harvestable.revenue))
+              .map(userInfo -> userInfo.AddProfit(harvestable.profit))
+              .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.unplant()))
+              .map(userInfoPort::save)
+              .orElseThrow();
     }
 }

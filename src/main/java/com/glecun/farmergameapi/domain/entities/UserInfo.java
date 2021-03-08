@@ -10,12 +10,14 @@ public class UserInfo {
     public final String id;
     public final String email;
     public final double money;
+    public final double profit;
     public final List<HarvestableZone> harvestableZones;
 
-    public UserInfo(String id, String email, double money, List<HarvestableZone> harvestableZones) {
+    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones) {
         this.id = id;
         this.email = email;
         this.money = money;
+        this.profit = profit;
         this.harvestableZones = harvestableZones;
     }
 
@@ -23,7 +25,7 @@ public class UserInfo {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 200, harvestableZones);
+        return new UserInfo(null, email, 200, 0, harvestableZones);
     }
 
     @Override
@@ -31,26 +33,23 @@ public class UserInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserInfo userInfo = (UserInfo) o;
-        return Double.compare(userInfo.money, money) == 0 &&
-                Objects.equals(id, userInfo.id) &&
-                Objects.equals(email, userInfo.email) &&
-                Objects.equals(harvestableZones, userInfo.harvestableZones);
+        return Double.compare(userInfo.money, money) == 0 && Double.compare(userInfo.profit, profit) == 0 && Objects.equals(id, userInfo.id) && Objects.equals(email, userInfo.email) && Objects.equals(harvestableZones, userInfo.harvestableZones);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, money, harvestableZones);
+        return Objects.hash(id, email, money, profit, harvestableZones);
     }
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("UserInfo{");
-        sb.append("id='").append(id).append('\'');
-        sb.append(", email='").append(email).append('\'');
-        sb.append(", money=").append(money);
-        sb.append(", harvestableZones=").append(harvestableZones);
-        sb.append('}');
-        return sb.toString();
+        return "UserInfo{" +
+              "id='" + id + '\'' +
+              ", email='" + email + '\'' +
+              ", money=" + money +
+              ", profit=" + profit +
+              ", harvestableZones=" + harvestableZones +
+              '}';
     }
 
     public UserInfo replaceInHarvestableZones(HarvestableZone harvestableZoneToReplace) {
@@ -60,15 +59,19 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email,money,newHarvestablesZones);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones);
     }
 
     public UserInfo DeduceMoney(Integer amountMoney) {
-        return new UserInfo(id, email, money - amountMoney, harvestableZones);
+        return new UserInfo(id, email, money - amountMoney, profit, harvestableZones);
     }
 
     public UserInfo AddMoney(Integer amountMoney) {
-        return new UserInfo(id, email, money + amountMoney, harvestableZones);
+        return new UserInfo(id, email, money + amountMoney, profit, harvestableZones);
+    }
+
+    public UserInfo AddProfit( int amount) {
+        return new UserInfo(id, email, money, profit + amount, harvestableZones);
     }
 
     public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmpty(SeedEnum seedEnum) {
@@ -89,7 +92,7 @@ public class UserInfo {
             return harvestableZone;
         }).collect(Collectors.toList());
 
-        return new UserInfo(id, email, money, newHarvestablesZones);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones);
     }
 
     public boolean hasStillHarvestableSold(SeedEnum seedEnum) {
