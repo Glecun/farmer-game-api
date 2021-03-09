@@ -59,9 +59,7 @@ public class OnSaleSeed {
     }
 
     public boolean canBeSell() {
-        long offset = 15;
-        LocalDateTime maximumOnSaleDate = LocalDateTime.now(ZoneOffset.UTC).minusSeconds(((long)(seedEnum.seed.growthTime.growthTime*60) - (long) (seedEnum.seed.growthTime.minGrowthTime*60)) + offset);
-        return onSaleDate != null && onSaleDate.isBefore(maximumOnSaleDate);
+        return willBeSoldDate.isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(15));
     }
 
     public static class Builder {
