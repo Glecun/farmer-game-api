@@ -35,8 +35,9 @@ public class ResolveSales {
 
         if (!userConcerned.isEmpty()) {
             OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
-            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake() : 0);
-            int nbFarmer = userConcerned.size() + (fakeUserUsed ? NB_OF_FAKE_USERS : 0);
+            long nbOfFakeUserInvolved = RandomizeNbOfFakeUserParticipating();
+            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0);
+            int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
 
             List<UserInfo> userInfosToUpdate = userConcerned.stream()
                     .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo))
@@ -162,12 +163,17 @@ public class ResolveSales {
         return new Random().nextInt(nbUsers + NB_OF_FAKE_USERS) >= nbUsers;
     }
 
-    private int nbOfZoneFakeUsersTake() {
+    private int nbOfZoneFakeUsersTake(long nbOfFakeUserInvolved) {
         List<Integer> nbOfZoneList = Arrays.asList(NB_OF_ZONE/2, NB_OF_ZONE);
-        return IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1))
-                .filter(value -> new Random().nextInt(2) == 0)
+        return IntStream.range(0, new Random().nextInt((int)nbOfFakeUserInvolved + 1))
                 .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
                 .reduce(0, Integer::sum);
 
+    }
+
+    private long RandomizeNbOfFakeUserParticipating() {
+        return IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1))
+                .filter(value -> new Random().nextInt(2) == 0)
+                .count();
     }
 }
