@@ -1,5 +1,7 @@
 package com.glecun.farmergameapi.domain.entities;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -77,11 +79,14 @@ public class UserInfo {
         return new UserInfo(id, email, money, profit + amount, harvestableZones);
     }
 
-    public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmpty(SeedEnum seedEnum) {
+    public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmptyAndOldOnSaleDate(SeedEnum seedEnum) {
         return harvestableZones.stream()
                 .map(HarvestableZone::getHarvestablePlanted)
                 .flatMap(Optional::stream)
-                .anyMatch(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum && harvestablePlanted.getInfoSale().isEmpty());
+                .anyMatch(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum &&
+                        harvestablePlanted.getInfoSale().isEmpty() &&
+                        harvestablePlanted.seedsPlanted.canBeSell()
+                );
     }
 
     public UserInfo SetInfoSale(HarvestableZone harvestableZoneToUpdate, InfoSale infoSaleToReplace) {

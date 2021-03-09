@@ -64,6 +64,7 @@ public class ResolveSales {
                 .map(harvestableZone -> harvestableZone.getHarvestablePlanted()
                         .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
                         .filter(harvestablePlanted -> harvestablePlanted.getInfoSale().isEmpty())
+                        .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.canBeSell())
                         .map(harvestablePlanted -> new HarvestableZoneToUpdate(
                                 harvestableZone,
                                 new InfoSale(
@@ -85,7 +86,7 @@ public class ResolveSales {
 
     private List<UserInfo> getUsersWhoPlantedAtLeastOneHarvestable(SeedEnum seedEnum) {
         return userInfoPort.findAll().stream()
-                .filter(userInfo -> userInfo.hasHarvestablePlantedWithSeedEnumAndInfoSaleEmpty(seedEnum))
+                .filter(userInfo -> userInfo.hasHarvestablePlantedWithSeedEnumAndInfoSaleEmptyAndOldOnSaleDate(seedEnum))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +94,7 @@ public class ResolveSales {
         return userConcerned.stream()
                 .map(userInfo -> userInfo.harvestableZones).flatMap(List::stream)
                 .map(harvestableZone -> harvestableZone.getHarvestablePlanted()
-                        .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum && harvestablePlanted.getInfoSale().isEmpty())
+                        .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum && harvestablePlanted.getInfoSale().isEmpty() && harvestablePlanted.seedsPlanted.canBeSell())
                         .map(harvestablePlanted -> harvestableZone.harvestableZoneType.nbOfZone)
                         .orElse(0))
                 .reduce(0, Integer::sum);
