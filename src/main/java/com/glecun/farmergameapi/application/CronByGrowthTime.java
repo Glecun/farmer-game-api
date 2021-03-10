@@ -16,14 +16,14 @@ public class CronByGrowthTime {
         this.applicationDomain = applicationDomain;
     }
 
-    //initialDelay = (growthTime - minGrowthTime)
+    //initialDelay = (growthTime - minGrowthTime) - 5s
 
-    @Scheduled(fixedRate = 20000, initialDelay = 10000)
+    @Scheduled(fixedRate = 20000, initialDelay = 5000)
     public void firstGrowthTime() {
         applicationDomain.resolveSales(GrowthTime.FIRST_GROWTH_TIME);
     }
 
-    @Scheduled(fixedRate = 120000, initialDelay = 60000)
+    @Scheduled(fixedRate = 120000, initialDelay = 55000)
     public void secondGrowthTime() {
         applicationDomain.resolveSales(GrowthTime.SECOND_GROWTH_TIME);
     }

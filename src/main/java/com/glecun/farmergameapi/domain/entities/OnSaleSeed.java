@@ -59,7 +59,7 @@ public class OnSaleSeed {
     }
 
     public boolean canBeSell() {
-        return willBeSoldDate.isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(15));
+        return willBeSoldDate.isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(20));
     }
 
     public static class Builder {
