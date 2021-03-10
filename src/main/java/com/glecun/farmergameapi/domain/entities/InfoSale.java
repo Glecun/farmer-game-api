@@ -4,14 +4,16 @@ import java.util.Objects;
 
 public class InfoSale {
     public final int nbFarmer;
+    public final long nbTotalFarmer;
     public final int nbTotalHarvestableSold;
     public final int nbHarvestableSold;
     public final boolean isEverythingSold;
     public final int revenue;
     public final int profit;
 
-    public InfoSale(int nbFarmer, int nbTotalHarvestableSold, int nbHarvestableSold, boolean isEverythingSold, int revenue, int profit) {
+    public InfoSale(int nbFarmer, long nbTotalFarmer, int nbTotalHarvestableSold, int nbHarvestableSold, boolean isEverythingSold, int revenue, int profit) {
         this.nbFarmer = nbFarmer;
+        this.nbTotalFarmer = nbTotalFarmer;
         this.nbTotalHarvestableSold = nbTotalHarvestableSold;
         this.nbHarvestableSold = nbHarvestableSold;
         this.isEverythingSold = isEverythingSold;
@@ -25,6 +27,7 @@ public class InfoSale {
         if (o == null || getClass() != o.getClass()) return false;
         InfoSale infoSale = (InfoSale) o;
         return nbFarmer == infoSale.nbFarmer &&
+                nbTotalFarmer == infoSale.nbTotalFarmer &&
                 nbTotalHarvestableSold == infoSale.nbTotalHarvestableSold &&
                 nbHarvestableSold == infoSale.nbHarvestableSold &&
                 isEverythingSold == infoSale.isEverythingSold &&
@@ -34,13 +37,14 @@ public class InfoSale {
 
     @Override
     public int hashCode() {
-        return Objects.hash(nbFarmer, nbTotalHarvestableSold, nbHarvestableSold, isEverythingSold, revenue, profit);
+        return Objects.hash(nbFarmer, nbTotalFarmer, nbTotalHarvestableSold, nbHarvestableSold, isEverythingSold, revenue, profit);
     }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("InfoSale{");
         sb.append("nbFarmer=").append(nbFarmer);
+        sb.append(", nbTotalFarmer=").append(nbTotalFarmer);
         sb.append(", nbTotalHarvestableSold=").append(nbTotalHarvestableSold);
         sb.append(", nbHarvestableSold=").append(nbHarvestableSold);
         sb.append(", isEverythingSold=").append(isEverythingSold);

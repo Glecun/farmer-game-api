@@ -41,4 +41,10 @@ public class UserInfoAdapter implements UserInfoPort {
         userInfoRepository.saveAll(userInfos.stream().map(UserInfoMongo::from).collect(Collectors.toList()));
 
     }
+
+    @Override
+    public long countAll() {
+        return userInfoRepository.count();
+
+    }
 }

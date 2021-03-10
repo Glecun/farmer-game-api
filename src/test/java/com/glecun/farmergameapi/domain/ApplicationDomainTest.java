@@ -69,7 +69,7 @@ class ApplicationDomainTest {
               .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
       LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, false, 0, 0);
+      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
               new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity)
@@ -113,7 +113,7 @@ class ApplicationDomainTest {
               .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
       LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, false, 0, 0);
+      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
               new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity)
@@ -200,7 +200,7 @@ class ApplicationDomainTest {
               .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
       LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, false, 0, 0);
+      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
       HarvestableZone harvestableZone = new HarvestableZone(
               HarvestableZoneType.ZONE_1,
               new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity)
@@ -225,7 +225,7 @@ class ApplicationDomainTest {
             new HarvestablePlanted(
                   seedsPlanted,
                   LocalDateTime.now(ZoneOffset.UTC),
-                  new InfoSale(5, 25, 5, true, 10, 5 )
+                  new InfoSale(5, 1, 25, 5, true, 10, 5 )
             )
       );
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");

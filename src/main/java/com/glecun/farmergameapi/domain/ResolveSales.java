@@ -38,9 +38,10 @@ public class ResolveSales {
             long nbOfFakeUserInvolved = RandomizeNbOfFakeUserParticipating();
             int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0);
             int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
+            long nbTotalFarmer = userInfoPort.countAll();
 
             List<UserInfo> userInfosToUpdate = userConcerned.stream()
-                    .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo))
+                    .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo, nbTotalFarmer))
                     .collect(Collectors.toList());
 
             int nbHarvestableNotSold = nbTotalHarvestable - onSaleSeedConcerned.demand.nbDemand;
@@ -60,7 +61,7 @@ public class ResolveSales {
             this.infoSale = infoSale;
         }
     }
-    private UserInfo getUserInfoToSave(SeedEnum seedEnum, OnSaleSeed onSaleSeedConcerned, int nbTotalHarvestable, int nbFarmer, UserInfo userInfo) {
+    private UserInfo getUserInfoToSave(SeedEnum seedEnum, OnSaleSeed onSaleSeedConcerned, int nbTotalHarvestable, int nbFarmer, UserInfo userInfo, long nbTotalFarmer) {
         return userInfo.harvestableZones.stream()
                 .map(harvestableZone -> harvestableZone.getHarvestablePlanted()
                         .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
@@ -70,6 +71,7 @@ public class ResolveSales {
                                 harvestableZone,
                                 new InfoSale(
                                         nbFarmer,
+                                        nbTotalFarmer,
                                         nbTotalHarvestable,
                                         harvestableZone.harvestableZoneType.nbOfZone,
                                         true,
@@ -134,6 +136,7 @@ public class ResolveSales {
                                                 harvestableZone,
                                                 new InfoSale(
                                                         infoSale.nbFarmer,
+                                                        infoSale.nbTotalFarmer,
                                                         infoSale.nbTotalHarvestableSold,
                                                         infoSale.nbHarvestableSold - 1,
                                                         false,

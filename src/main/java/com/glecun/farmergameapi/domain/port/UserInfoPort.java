@@ -14,4 +14,6 @@ public interface UserInfoPort {
     List<UserInfo> findAll();
 
     void saveAll(List<UserInfo> userInfos);
+
+    long countAll();
 }
