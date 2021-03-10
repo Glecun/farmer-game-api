@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
-import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_ZONE;
+import static com.glecun.farmergameapi.domain.entities.HarvestableZoneType.getNbZonesAdditionnedList;
 
 @Service
 public class ResolveSales {
@@ -167,7 +167,7 @@ public class ResolveSales {
     }
 
     private int nbOfZoneFakeUsersTake(long nbOfFakeUserInvolved) {
-        List<Integer> nbOfZoneList = Arrays.asList(NB_OF_ZONE/2, NB_OF_ZONE);
+        List<Integer> nbOfZoneList = getNbZonesAdditionnedList();
         return IntStream.range(0, (int)nbOfFakeUserInvolved + 1)
                 .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
                 .reduce(0, Integer::sum);

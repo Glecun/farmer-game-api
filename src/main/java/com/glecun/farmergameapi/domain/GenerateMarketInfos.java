@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
-import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_ZONE;
+import static com.glecun.farmergameapi.domain.entities.HarvestableZoneType.getMaxCapacity;
 
 @Service
 public class GenerateMarketInfos {
@@ -62,8 +62,8 @@ public class GenerateMarketInfos {
     Demand randomizeDemand() {
         var demandTypeList = Arrays.stream(DemandType.values()).collect(Collectors.toList());
         DemandType randomDemandType = demandTypeList.stream().skip((int) (demandTypeList.size() * Math.random())).findAny().orElseThrow();
-        Integer usersZoneCapacity = userInfoPort.findAll().stream().map(userInfo -> NB_OF_ZONE).reduce(0, Integer::sum);
-        Integer fakePlayersZoneCapacity = IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1)).map(operand -> NB_OF_ZONE).reduce(0, Integer::sum);
+        Integer usersZoneCapacity = userInfoPort.findAll().stream().map(userInfo -> getMaxCapacity()).reduce(0, Integer::sum);
+        Integer fakePlayersZoneCapacity = IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1)).map(fakeUserInt -> getMaxCapacity()).reduce(0, Integer::sum);
         return new Demand(randomDemandType,  Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)randomDemandType.percentOfNbZones/100)));
     }
 
