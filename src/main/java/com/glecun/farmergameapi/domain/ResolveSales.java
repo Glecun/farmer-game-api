@@ -165,7 +165,7 @@ public class ResolveSales {
 
     private int nbOfZoneFakeUsersTake(long nbOfFakeUserInvolved) {
         List<Integer> nbOfZoneList = Arrays.asList(NB_OF_ZONE/2, NB_OF_ZONE);
-        return IntStream.range(0, new Random().nextInt((int)nbOfFakeUserInvolved + 1))
+        return IntStream.range(0, (int)nbOfFakeUserInvolved + 1)
                 .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
                 .reduce(0, Integer::sum);
 
