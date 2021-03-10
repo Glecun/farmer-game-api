@@ -38,7 +38,7 @@ public class ResolveSales {
             long nbOfFakeUserInvolved = RandomizeNbOfFakeUserParticipating();
             int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0);
             int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
-            long nbTotalFarmer = userInfoPort.countAll();
+            long nbTotalFarmer = userInfoPort.countAll() + NB_OF_FAKE_USERS;
 
             List<UserInfo> userInfosToUpdate = userConcerned.stream()
                     .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo, nbTotalFarmer))
