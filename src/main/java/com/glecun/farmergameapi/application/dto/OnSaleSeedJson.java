@@ -5,14 +5,14 @@ import com.glecun.farmergameapi.domain.entities.OnSaleSeed;
 import com.glecun.farmergameapi.domain.entities.SeedEnum;
 
 public class OnSaleSeedJson {
-   public final SeedEnumJson seedEnum;
+   public final SeedEnum seedEnum;
    public final int buyPrice;
    public final int sellPrice;
    public final DemandJson demand;
    public final long timeLeft;
    public final LocalDateTime willBeSoldDate;
 
-   private OnSaleSeedJson(SeedEnumJson seedEnum, int buyPrice, int sellPrice, DemandJson demand, long timeLeft, LocalDateTime willBeSoldDate) {
+   private OnSaleSeedJson(SeedEnum seedEnum, int buyPrice, int sellPrice, DemandJson demand, long timeLeft, LocalDateTime willBeSoldDate) {
       this.seedEnum = seedEnum;
       this.buyPrice = buyPrice;
       this.sellPrice = sellPrice;
@@ -23,7 +23,7 @@ public class OnSaleSeedJson {
 
    public static OnSaleSeedJson from(OnSaleSeed onSaleSeed) {
       return new OnSaleSeedJson(
-            SeedEnumJson.values()[onSaleSeed.seedEnum.ordinal()],
+            onSaleSeed.seedEnum,
             onSaleSeed.buyPrice,
             onSaleSeed.sellPrice,
             DemandJson.from(onSaleSeed.demand),
@@ -34,7 +34,7 @@ public class OnSaleSeedJson {
 
    public OnSaleSeed toOnSaleSeed() {
       return OnSaleSeed.builder()
-              .seedEnum(SeedEnum.valueOf(seedEnum.name()))
+              .seedEnum(seedEnum)
               .buyPrice(buyPrice)
               .sellPrice(sellPrice)
               .demand(demand.toDemand())
