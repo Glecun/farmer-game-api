@@ -1,12 +1,15 @@
 package com.glecun.farmergameapi.domain;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
 
 @Service
 public class ApplicationDomain {
@@ -17,15 +20,17 @@ public class ApplicationDomain {
     private final GetCurrentMarketInfo getCurrentMarketInfo;
     private final GenerateMarketInfos generateMarketInfos;
     private final ResolveSales resolveSales;
+    private final GetRanksInfo getRanksInfo;
 
     private final UserInfoPort userInfoPort;
 
     @Autowired
-    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, UserInfoPort userInfoPort) {
+    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, GetRanksInfo getRanksInfo, UserInfoPort userInfoPort) {
         this.signUp = signUp;
         this.getCurrentMarketInfo = getCurrentMarketInfo;
         this.generateMarketInfos = generateMarketInfos;
         this.resolveSales = resolveSales;
+        this.getRanksInfo = getRanksInfo;
         this.userInfoPort = userInfoPort;
     }
 
@@ -75,5 +80,8 @@ public class ApplicationDomain {
               .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.unplant()))
               .map(userInfoPort::save)
               .orElseThrow();
+    }
+    public RanksInfo getRanksInfo(User user) {
+        return getRanksInfo.execute(user);
     }
 }

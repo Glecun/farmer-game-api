@@ -30,6 +30,10 @@ public class UserInfo {
         return new UserInfo(null, email, 200, 0, harvestableZones);
     }
 
+    public double getProfit() {
+        return profit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
