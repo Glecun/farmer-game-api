@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 public enum HarvestableZoneType {
     ZONE_1(false, 12),
     ZONE_2(false, 12),
-    ZONE_3(true, 40);
+    ZONE_3(true, 12),
+    ZONE_4(true, 12),
+    ZONE_5(true, 40);
 
     public final boolean lockedByDefaut;
     public final int nbOfZone;
