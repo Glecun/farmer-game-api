@@ -38,13 +38,14 @@ public class HarvestableZone {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HarvestableZone that = (HarvestableZone) o;
-        return harvestableZoneType == that.harvestableZoneType &&
+        return isLocked == that.isLocked &&
+                harvestableZoneType == that.harvestableZoneType &&
                 Objects.equals(harvestablePlanted, that.harvestablePlanted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(harvestableZoneType, harvestablePlanted);
+        return Objects.hash(harvestableZoneType, harvestablePlanted, isLocked);
     }
 
     @Override
@@ -52,6 +53,7 @@ public class HarvestableZone {
         final StringBuffer sb = new StringBuffer("HarvestableZone{");
         sb.append("harvestableZoneType=").append(harvestableZoneType);
         sb.append(", harvestablePlanted=").append(harvestablePlanted);
+        sb.append(", isLocked=").append(isLocked);
         sb.append('}');
         return sb.toString();
     }

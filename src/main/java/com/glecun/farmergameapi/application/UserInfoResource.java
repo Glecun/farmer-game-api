@@ -1,9 +1,6 @@
 package com.glecun.farmergameapi.application;
 
-import com.glecun.farmergameapi.application.dto.HarvestableZoneJson;
-import com.glecun.farmergameapi.application.dto.MarketInfoJson;
-import com.glecun.farmergameapi.application.dto.UserInfoJson;
-import com.glecun.farmergameapi.application.dto.UserJson;
+import com.glecun.farmergameapi.application.dto.*;
 import com.glecun.farmergameapi.domain.ApplicationDomain;
 import com.glecun.farmergameapi.domain.entities.HarvestableZoneType;
 import com.glecun.farmergameapi.domain.entities.User;
@@ -42,8 +39,8 @@ public class UserInfoResource {
     }
 
     @PostMapping("/unlock-zone/")
-    public UserInfoJson unlockZone(@RequestBody String harvestableZoneType, Authentication authentication) {
+    public UserInfoJson unlockZone(@RequestBody HarvestableZoneTypeJson harvestableZoneTypeJson , Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.valueOf(harvestableZoneType)));
+        return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, harvestableZoneTypeJson.harvestableZoneType));
     }
 }

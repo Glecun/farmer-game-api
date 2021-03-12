@@ -88,8 +88,8 @@ public class ApplicationDomain {
 
     public UserInfo unlockHarvestableZone(User user, HarvestableZoneType harvestableZoneType) {
         return userInfoPort.findByEmail(user.getEmail())
-                    .map(userInfo -> userInfo.modifyMoney(-harvestableZoneType.price))
                     .map(userInfo -> userInfo.unlockHarvestableZone(harvestableZoneType))
+                    .map(userInfo -> userInfo.modifyMoney(-harvestableZoneType.price))
                     .map(userInfoPort::save)
                     .orElseThrow();
     }

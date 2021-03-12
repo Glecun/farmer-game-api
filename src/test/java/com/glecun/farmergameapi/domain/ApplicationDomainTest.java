@@ -287,4 +287,16 @@ class ApplicationDomainTest {
 
       assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
    }
+
+   @Test
+   void should_not_unlock_HarvestableZone_when_already_unlocked() {
+      var user = new User("grewa", "greg.lol@mdr.fr", "pass");
+      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
+      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, false);
+      when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
+              new UserInfo("1", "greg.lol@mdr.fr", 4000, 0, List.of(harvestableZone1, harvestableZone3))
+      ));
+
+      assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
+   }
 }

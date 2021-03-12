@@ -118,7 +118,10 @@ public class UserInfo {
     public UserInfo unlockHarvestableZone(HarvestableZoneType harvestableZoneType) {
         List<HarvestableZone> newHarvestablesZones = harvestableZones.stream().map(harvestableZone -> {
             if (harvestableZone.hasType(harvestableZoneType)) {
-                return new HarvestableZone(harvestableZoneType, harvestableZone.getHarvestablePlanted().orElse(null), true);
+                if(!harvestableZone.isLocked) {
+                    throw new RuntimeException("zone already unlocked");
+                }
+                return new HarvestableZone(harvestableZoneType, harvestableZone.getHarvestablePlanted().orElse(null), false);
             }
             return harvestableZone;
         }).collect(Collectors.toList());
