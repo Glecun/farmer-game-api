@@ -43,11 +43,11 @@ class ResolveSalesTest {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1, false)) );
         HarvestablePlanted harvestablePlanted2 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2)) );
+        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2, false)) );
         HarvestablePlanted harvestablePlanted3 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo3 = new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted3)) );
+        var userInfo3 = new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted3, false)) );
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2, userInfo3));
         when(userInfoPort.countAll()).thenReturn(5L);
 
@@ -57,14 +57,11 @@ class ResolveSalesTest {
         List<UserInfo> value = userInfoCaptor.getValue();
         assertThat(value).containsExactlyInAnyOrder(
                 new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed, now,
-                        new InfoSale(3, 15, 36, 12, true, 36, 12)
-                )))),
+                        new InfoSale(3, 15, 36, 12, true, 36, 12)), false))),
                 new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, new HarvestablePlanted(onSaleSeed, now,
-                        new InfoSale(3, 15, 36, 12, true, 36, 12)
-                )))),
+                        new InfoSale(3, 15, 36, 12, true, 36, 12)), false))),
                 new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed, now,
-                        new InfoSale(3, 15, 36, 12, true, 36, 12)
-                ))))
+                        new InfoSale(3, 15, 36, 12, true, 36, 12)), false)))
         );
     }
 
@@ -73,11 +70,11 @@ class ResolveSalesTest {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VerySmallDemand, 10)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1, false)) );
         HarvestablePlanted harvestablePlanted2 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2)) );
+        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2, false)) );
         HarvestablePlanted harvestablePlanted3 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo3 = new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted3)) );
+        var userInfo3 = new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted3, false)) );
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2, userInfo3));
 
         resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
@@ -99,10 +96,10 @@ class ResolveSalesTest {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, new InfoSale(10, 2, 10,10,true,10,10));
-        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1, false)) );
         HarvestablePlanted harvestablePlanted2Zone1 = new HarvestablePlanted(onSaleSeed, now, new InfoSale(10, 2, 10,10,true,10,10));
         HarvestablePlanted harvestablePlanted2Zone2 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2Zone1), new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted2Zone2)) );
+        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2Zone1, false), new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted2Zone2, false)) );
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2));
         when(userInfoPort.countAll()).thenReturn(1L);
 
@@ -112,8 +109,8 @@ class ResolveSalesTest {
         List<UserInfo> value = userInfoCaptor.getValue();
         assertThat(value).containsExactlyInAnyOrder(
                 new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(
-                        new HarvestableZone(HarvestableZoneType.ZONE_1, new HarvestablePlanted(onSaleSeed, now, new InfoSale(10, 2, 10,10,true,10,10))),
-                        new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed, now, new InfoSale(1, 11, 12, 12, true, 36, 12)))
+                        new HarvestableZone(HarvestableZoneType.ZONE_1, new HarvestablePlanted(onSaleSeed, now, new InfoSale(10, 2, 10,10,true,10,10)), false),
+                        new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed, now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false)
                 ))
         );
     }
@@ -125,12 +122,12 @@ class ResolveSalesTest {
 
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now.plusMinutes(2)).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
-        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1)) );
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1, false)) );
 
         HarvestablePlanted harvestablePlanted2Zone1 = new HarvestablePlanted(onSaleSeed, now, null);
         OnSaleSeed onSaleSeed2 = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
         HarvestablePlanted harvestablePlanted2Zone2 = new HarvestablePlanted(onSaleSeed2, now, null);
-        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2Zone1), new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted2Zone2)) );
+        var userInfo2 = new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, harvestablePlanted2Zone1, false), new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted2Zone2, false)) );
 
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2));
         when(userInfoPort.countAll()).thenReturn(1L);
@@ -143,8 +140,8 @@ class ResolveSalesTest {
         List<UserInfo> value = userInfoCaptor.getValue();
         assertThat(value.get(0)).isEqualTo(
                 new UserInfo("2", "greg2.lol@mdr.fr", 200, 0, List.of(
-                        new HarvestableZone(HarvestableZoneType.ZONE_1, new HarvestablePlanted(onSaleSeed, now, null)),
-                        new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed2, now, new InfoSale(1, 11, 12, 12, true, 36, 12)))
+                        new HarvestableZone(HarvestableZoneType.ZONE_1, new HarvestablePlanted(onSaleSeed, now, null), false),
+                        new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed2, now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false)
                 ))
         );
     }

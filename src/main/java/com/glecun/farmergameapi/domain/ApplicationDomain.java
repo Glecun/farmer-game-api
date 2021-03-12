@@ -54,7 +54,7 @@ public class ApplicationDomain {
         return userInfoPort.findByEmail(user.getEmail())
                 .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
                 .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.nullifyInfoSale()))
-                .map(userInfo -> userInfo.ModifyMoney(
+                .map(userInfo -> userInfo.modifyMoney(
                         - harvestableZone.harvestableZoneType.nbOfZone *
                         harvestableZone.getHarvestablePlanted()
                                 .map(harvestablePlanted -> harvestablePlanted.seedsPlanted)
@@ -75,13 +75,22 @@ public class ApplicationDomain {
               .flatMap(Function.identity()).orElseThrow();
 
         return userInfoPort.findByEmail(user.getEmail())
-              .map(userInfo -> userInfo.ModifyMoney(harvestable.revenue))
-              .map(userInfo -> userInfo.AddProfit(harvestable.profit))
+              .map(userInfo -> userInfo.modifyMoney(harvestable.revenue))
+              .map(userInfo -> userInfo.addProfit(harvestable.profit))
               .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.unplant()))
               .map(userInfoPort::save)
               .orElseThrow();
     }
+
     public RanksInfo getRanksInfo(User user) {
         return getRanksInfo.execute(user);
+    }
+
+    public UserInfo unlockHarvestableZone(User user, HarvestableZoneType harvestableZoneType) {
+        return userInfoPort.findByEmail(user.getEmail())
+                    .map(userInfo -> userInfo.modifyMoney(-harvestableZoneType.price))
+                    .map(userInfo -> userInfo.unlockHarvestableZone(harvestableZoneType))
+                    .map(userInfoPort::save)
+                    .orElseThrow();
     }
 }

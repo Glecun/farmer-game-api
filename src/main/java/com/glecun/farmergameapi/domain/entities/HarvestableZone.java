@@ -6,10 +6,12 @@ import java.util.Optional;
 public class HarvestableZone {
     public final HarvestableZoneType harvestableZoneType;
     private final HarvestablePlanted harvestablePlanted;
+    public final boolean isLocked;
 
-    public HarvestableZone(HarvestableZoneType harvestableZoneType, HarvestablePlanted harvestablePlanted) {
+    public HarvestableZone(HarvestableZoneType harvestableZoneType, HarvestablePlanted harvestablePlanted, boolean isLocked) {
         this.harvestableZoneType = harvestableZoneType;
         this.harvestablePlanted = harvestablePlanted;
+        this.isLocked = isLocked;
     }
 
     public Optional<HarvestablePlanted> getHarvestablePlanted() {
@@ -21,14 +23,14 @@ public class HarvestableZone {
     }
 
     public HarvestableZone unplant(){
-        return new HarvestableZone(harvestableZoneType, null);
+        return new HarvestableZone(harvestableZoneType, null, isLocked);
     }
 
     public HarvestableZone nullifyInfoSale() {
         HarvestablePlanted harvestablePlanted = getHarvestablePlanted()
                 .map(harvestablePlanted1 -> new HarvestablePlanted(harvestablePlanted1.seedsPlanted, harvestablePlanted1.whenPlanted, null))
                 .orElseThrow();
-        return new HarvestableZone(harvestableZoneType, harvestablePlanted);
+        return new HarvestableZone(harvestableZoneType, harvestablePlanted, isLocked);
     }
 
     @Override

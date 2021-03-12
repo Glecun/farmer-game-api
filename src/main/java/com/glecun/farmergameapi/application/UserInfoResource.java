@@ -5,6 +5,7 @@ import com.glecun.farmergameapi.application.dto.MarketInfoJson;
 import com.glecun.farmergameapi.application.dto.UserInfoJson;
 import com.glecun.farmergameapi.application.dto.UserJson;
 import com.glecun.farmergameapi.domain.ApplicationDomain;
+import com.glecun.farmergameapi.domain.entities.HarvestableZoneType;
 import com.glecun.farmergameapi.domain.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -38,5 +39,11 @@ public class UserInfoResource {
     public UserInfoJson acknowledgeInfoSale(@RequestBody HarvestableZoneJson harvestableZoneJson, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return UserInfoJson.from(applicationDomain.acknowledgeInfoSales(harvestableZoneJson.toHarvestableZone(), user));
+    }
+
+    @PostMapping("/unlock-zone/")
+    public UserInfoJson unlockZone(@RequestBody HarvestableZoneType harvestableZoneType, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, harvestableZoneType));
     }
 }

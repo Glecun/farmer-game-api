@@ -1,7 +1,5 @@
 package com.glecun.farmergameapi.domain.entities;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +23,7 @@ public class UserInfo {
 
     public static UserInfo createUserInfo(String email) {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
-                .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null))
+                .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
         return new UserInfo(null, email, 200, 0, harvestableZones);
     }
@@ -68,7 +66,7 @@ public class UserInfo {
         return new UserInfo(id, email, money, profit, newHarvestablesZones);
     }
 
-    public UserInfo ModifyMoney(Integer amountMoney) {
+    public UserInfo modifyMoney(Integer amountMoney) {
         double newMoney = this.money + amountMoney;
         if (newMoney < 0) {
             throw new RuntimeException("Cannot have negative money");
@@ -79,7 +77,7 @@ public class UserInfo {
         return new UserInfo(id, email, newMoney, profit, harvestableZones);
     }
 
-    public UserInfo AddProfit( int amount) {
+    public UserInfo addProfit(int amount) {
         return new UserInfo(id, email, money, profit + amount, harvestableZones);
     }
 
@@ -98,7 +96,8 @@ public class UserInfo {
             if (harvestableZone.hasType(harvestableZoneToUpdate.harvestableZoneType)) {
                 return new HarvestableZone(
                         harvestableZone.harvestableZoneType,
-                        harvestableZone.getHarvestablePlanted().map(harvestablePlanted -> new HarvestablePlanted(harvestablePlanted.seedsPlanted, harvestablePlanted.whenPlanted, infoSaleToReplace)).orElseThrow()
+                        harvestableZone.getHarvestablePlanted().map(harvestablePlanted -> new HarvestablePlanted(harvestablePlanted.seedsPlanted, harvestablePlanted.whenPlanted, infoSaleToReplace)).orElseThrow(),
+                        harvestableZone.isLocked
                 );
             }
             return harvestableZone;
@@ -114,5 +113,22 @@ public class UserInfo {
                 .map(HarvestablePlanted::getInfoSale)
                 .flatMap(Optional::stream)
                 .anyMatch(infoSale -> infoSale.nbHarvestableSold > 0);
+    }
+
+    public UserInfo unlockHarvestableZone(HarvestableZoneType harvestableZoneType) {
+        List<HarvestableZone> newHarvestablesZones = harvestableZones.stream().map(harvestableZone -> {
+            if (harvestableZone.hasType(harvestableZoneType)) {
+                return new HarvestableZone(harvestableZoneType, harvestableZone.getHarvestablePlanted().orElse(null), true);
+            }
+            return harvestableZone;
+        }).collect(Collectors.toList());
+        return new UserInfo(id, email, money, profit, newHarvestablesZones);
+    }
+
+    public int getMaxNbOfZoneCapacity() {
+        return harvestableZones.stream()
+              .filter(harvestableZone -> !harvestableZone.isLocked)
+              .map(harvestableZone -> harvestableZone.harvestableZoneType.nbOfZone)
+              .collect(Collectors.toList()).stream().reduce(0, Integer::sum);
     }
 }
