@@ -26,12 +26,14 @@ public class CronByGrowthTime {
     public void firstGrowthTime() {
         logger.info("Start firstGrowthTime");
         applicationDomain.resolveSales(GrowthTime.FIRST_GROWTH_TIME);
+        logger.info("Finish firstGrowthTime");
     }
 
     @Scheduled(fixedRate = 120000, initialDelay = 55000)
     public void secondGrowthTime() {
         logger.info("Start secondGrowthTime");
         applicationDomain.resolveSales(GrowthTime.SECOND_GROWTH_TIME);
+        logger.info("Finish secondGrowthTime");
     }
 
 }

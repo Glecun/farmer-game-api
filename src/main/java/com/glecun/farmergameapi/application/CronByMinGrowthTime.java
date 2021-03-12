@@ -24,11 +24,13 @@ public class CronByMinGrowthTime {
    public void firstMinGrowthTime() {
       logger.info("Start firstMinGrowthTime");
       applicationDomain.generateMarketInfos(GrowthTime.FIRST_GROWTH_TIME);
+      logger.info("Finish firstMinGrowthTime");
    }
 
    @Scheduled(fixedRate = 120000)
    public void secondMinGrowthTime() {
       logger.info("Start secondMinGrowthTime");
       applicationDomain.generateMarketInfos(GrowthTime.SECOND_GROWTH_TIME);
+      logger.info("Finish secondMinGrowthTime");
    }
 }
