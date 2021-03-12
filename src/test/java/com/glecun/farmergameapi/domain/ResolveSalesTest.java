@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -144,6 +145,21 @@ class ResolveSalesTest {
                         new HarvestableZone(HarvestableZoneType.ZONE_2, new HarvestablePlanted(onSaleSeed2, now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false)
                 ))
         );
+    }
+
+    @Test
+    void should_not_infinite_loop_if_more_demand_than_production() {
+        ReflectionTestUtils.setField(resolveSales, "fakeUserUsed", true);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VerySmallDemand, 1)).build();
+        HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_5, harvestablePlanted1, false)) );
+        when(userInfoPort.findAll()).thenReturn(List.of(userInfo1));
+        when(userInfoPort.countAll()).thenReturn(1L);
+
+        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+
+        verify(userInfoPort).saveAll(anyList());
     }
 
 }

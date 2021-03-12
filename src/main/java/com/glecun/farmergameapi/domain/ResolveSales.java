@@ -119,6 +119,9 @@ public class ResolveSales {
             if (isFakeUserNeedToReduce(updatedUserInfosToUpdate) && fakeUserUsed){
                 continue;
             }
+            if(updatedUserInfosToUpdate.stream().noneMatch(userInfo -> userInfo.hasStillHarvestableSold(seedEnum))){
+                break;
+            }
             UserInfo randomUserInfo;
             do {
                 randomUserInfo = updatedUserInfosToUpdate.stream().skip((int) (userInfosToUpdate.size() * Math.random())).findAny().orElseThrow();
