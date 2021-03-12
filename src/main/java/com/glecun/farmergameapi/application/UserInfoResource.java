@@ -42,8 +42,8 @@ public class UserInfoResource {
     }
 
     @PostMapping("/unlock-zone/")
-    public UserInfoJson unlockZone(@RequestBody HarvestableZoneType harvestableZoneType, Authentication authentication) {
+    public UserInfoJson unlockZone(@RequestBody String harvestableZoneType, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, harvestableZoneType));
+        return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.valueOf(harvestableZoneType)));
     }
 }
