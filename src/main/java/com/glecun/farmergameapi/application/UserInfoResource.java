@@ -1,8 +1,10 @@
 package com.glecun.farmergameapi.application;
 
 import com.glecun.farmergameapi.application.dto.*;
+import com.glecun.farmergameapi.application.dto.post.HarvestableZoneTypeJson;
+import com.glecun.farmergameapi.application.dto.post.PlantInAZonePostJson;
+import com.glecun.farmergameapi.application.dto.post.SeedEnumJson;
 import com.glecun.farmergameapi.domain.ApplicationDomain;
-import com.glecun.farmergameapi.domain.entities.HarvestableZoneType;
 import com.glecun.farmergameapi.domain.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -27,15 +29,19 @@ public class UserInfoResource {
     }
 
     @PostMapping("/plant-in-a-zone/")
-    public UserInfoJson plantInAZone(@RequestBody HarvestableZoneJson harvestableZoneJson, Authentication authentication) {
+    public UserInfoJson plantInAZone(@RequestBody PlantInAZonePostJson plantInAZonePostJson, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return UserInfoJson.from(applicationDomain.plantInAZone(harvestableZoneJson.toHarvestableZone(), user));
+        return UserInfoJson.from(applicationDomain.plantInAZone(
+                plantInAZonePostJson.harvestableZoneTypeJson.harvestableZoneType,
+                plantInAZonePostJson.seedEnumJson.seedEnum,
+                user
+       ));
     }
 
     @PostMapping("/acknowledge-infosale/")
-    public UserInfoJson acknowledgeInfoSale(@RequestBody HarvestableZoneJson harvestableZoneJson, Authentication authentication) {
+    public UserInfoJson acknowledgeInfoSale(@RequestBody HarvestableZoneTypeJson harvestableZoneTypeJson, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return UserInfoJson.from(applicationDomain.acknowledgeInfoSales(harvestableZoneJson.toHarvestableZone(), user));
+        return UserInfoJson.from(applicationDomain.acknowledgeInfoSales(harvestableZoneTypeJson.harvestableZoneType, user));
     }
 
     @PostMapping("/unlock-zone/")

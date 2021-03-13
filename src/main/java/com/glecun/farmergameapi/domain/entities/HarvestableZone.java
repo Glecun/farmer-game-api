@@ -1,7 +1,10 @@
 package com.glecun.farmergameapi.domain.entities;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class HarvestableZone {
     public final HarvestableZoneType harvestableZoneType;
@@ -26,10 +29,13 @@ public class HarvestableZone {
         return new HarvestableZone(harvestableZoneType, null, isLocked);
     }
 
-    public HarvestableZone nullifyInfoSale() {
-        HarvestablePlanted harvestablePlanted = getHarvestablePlanted()
-                .map(harvestablePlanted1 -> new HarvestablePlanted(harvestablePlanted1.seedsPlanted, harvestablePlanted1.whenPlanted, null))
-                .orElseThrow();
+    public InfoSale getInfoSale() {
+        return getHarvestablePlanted().map(HarvestablePlanted::getInfoSale)
+                .flatMap(Function.identity()).orElseThrow();
+    }
+
+    public HarvestableZone plant(OnSaleSeed onSaleSeed, Supplier<LocalDateTime> now) {
+        HarvestablePlanted harvestablePlanted = new HarvestablePlanted(onSaleSeed, now.get(), null);
         return new HarvestableZone(harvestableZoneType, harvestablePlanted, isLocked);
     }
 

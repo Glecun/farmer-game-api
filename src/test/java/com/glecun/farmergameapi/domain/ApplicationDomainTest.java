@@ -13,6 +13,7 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.glecun.farmergameapi.domain.entities.*;
@@ -22,12 +23,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationDomainTest {
 
    @Mock
    private UserInfoPort userInfoPort;
+   @Mock
+   private GetCurrentMarketInfo getCurrentMarketInfo;
 
    @InjectMocks
    ApplicationDomain applicationDomain;
@@ -55,29 +59,27 @@ class ApplicationDomainTest {
 
    @Test
    void should_plant_in_a_zone() {
+      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+      Supplier<LocalDateTime> nowSupplier = () -> now;
+      ReflectionTestUtils.setField(applicationDomain, "now", nowSupplier);
       var user = new User("","greg.lol@mdr.fr","" );
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
       when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones ));
+
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
               .buyPrice(5)
               .sellPrice(10)
               .demand(new Demand(DemandType.SmallDemand, 5))
               .onSaleDate(null)
-              .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
+              .willBeSoldDate(now)
               .build();
-      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
-      HarvestableZone harvestableZone = new HarvestableZone(
-              HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity),
-              false
-      );
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      applicationDomain.plantInAZone(harvestableZone, user);
+      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1,SeedEnum.GREEN_BEAN, user);
 
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
@@ -100,29 +102,27 @@ class ApplicationDomainTest {
 
    @Test
    void should_plant_in_a_zone_and_keep_min_money() {
+      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+      Supplier<LocalDateTime> nowSupplier = () -> now;
+      ReflectionTestUtils.setField(applicationDomain, "now", nowSupplier);
       var user = new User("","greg.lol@mdr.fr","" );
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
       when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones ));
+
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
               .buyPrice(14)
               .sellPrice(10)
               .demand(new Demand(DemandType.SmallDemand, 5))
               .onSaleDate(null)
-              .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
+              .willBeSoldDate(now)
               .build();
-      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
-      HarvestableZone harvestableZone = new HarvestableZone(
-              HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity),
-              false
-      );
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      applicationDomain.plantInAZone(harvestableZone, user);
+      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN , user);
 
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
@@ -146,22 +146,17 @@ class ApplicationDomainTest {
    @Test
    void should_not_plant_in_a_zone_when_no_UserInfo() {
       var user = new User("","greg.lol@mdr.fr","" );
-
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(OnSaleSeed.builder().seedEnum(SeedEnum.GREEN_BEAN).build()), LocalDateTime.now(ZoneOffset.UTC))));
       when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(null, user)).isInstanceOf(RuntimeException.class);
-
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(null,SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
    void should_not_plant_in_a_zone_when_no_OnSaleSeed() {
       var user = new User("","greg.lol@mdr.fr","" );
-      var harvestableZones = Arrays.stream(HarvestableZoneType.values())
-              .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
-              .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
-      HarvestableZone harvestableZone = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", emptyList(), LocalDateTime.now(ZoneOffset.UTC))));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -179,13 +174,9 @@ class ApplicationDomainTest {
               .onSaleDate(null)
               .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
-      HarvestableZone harvestableZone = new HarvestableZone(
-              HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, LocalDateTime.now(ZoneOffset.UTC), null),
-              false
-      );
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), LocalDateTime.now(ZoneOffset.UTC))));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -204,13 +195,9 @@ class ApplicationDomainTest {
               .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
               .build();
       LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-      InfoSale infoSaleSendByUnity = new InfoSale(0, 0, 0, 0, false, 0, 0);
-      HarvestableZone harvestableZone = new HarvestableZone(
-              HarvestableZoneType.ZONE_1,
-              new HarvestablePlanted(seedsPlanted, now, infoSaleSendByUnity),
-              false);
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(harvestableZone, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
 
    }
 
@@ -239,7 +226,7 @@ class ApplicationDomainTest {
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList()));
 
-      applicationDomain.acknowledgeInfoSales(harvestableZone, user);
+      applicationDomain.acknowledgeInfoSales(HarvestableZoneType.ZONE_1, user);
 
       var expectedUserInfo = new UserInfo(
             "1",

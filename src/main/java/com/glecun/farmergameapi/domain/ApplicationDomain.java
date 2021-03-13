@@ -1,9 +1,13 @@
 package com.glecun.farmergameapi.domain;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.glecun.farmergameapi.domain.entities.*;
+import com.glecun.farmergameapi.domain.port.MarketInfoPort;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,8 @@ public class ApplicationDomain {
     private final GetRanksInfo getRanksInfo;
 
     private final UserInfoPort userInfoPort;
+
+    public Supplier<LocalDateTime> now = () -> LocalDateTime.now(ZoneOffset.UTC);
 
     @Autowired
     public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, GetRanksInfo getRanksInfo, UserInfoPort userInfoPort) {
@@ -50,17 +56,15 @@ public class ApplicationDomain {
         return userInfoPort.findByEmail(email).orElseGet(() -> userInfoPort.save(UserInfo.createUserInfo(email)));
     }
 
-    public UserInfo plantInAZone(HarvestableZone harvestableZone, User user) {
+    public UserInfo plantInAZone(HarvestableZoneType harvestableZoneType, SeedEnum seedEnum , User user) {
+        OnSaleSeed onSaleSeed = getCurrentMarketInfo.execute().map(marketInfo -> marketInfo.onSaleSeeds).stream().flatMap(Collection::stream)
+                .filter(aOnSaleSeed -> aOnSaleSeed.seedEnum == seedEnum)
+                .findFirst().orElseThrow();
+
         return userInfoPort.findByEmail(user.getEmail())
                 .or( () -> {throw new RuntimeException("Cannot plant a seed for a UserInfo that doesn't exists");})
-                .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.nullifyInfoSale()))
-                .map(userInfo -> userInfo.modifyMoney(
-                        - harvestableZone.harvestableZoneType.nbOfZone *
-                        harvestableZone.getHarvestablePlanted()
-                                .map(harvestablePlanted -> harvestablePlanted.seedsPlanted)
-                                .map(onSaleSeed -> onSaleSeed.buyPrice)
-                                .orElseThrow(() -> {throw new RuntimeException("Try to plant in a zone without specify onSaleSeed");})
-                ))
+                .map(userInfo ->  userInfo.plant(harvestableZoneType, onSaleSeed, now ))
+                .map(userInfo -> userInfo.modifyMoney(- userInfo.getHarvestableZone(harvestableZoneType).harvestableZoneType.nbOfZone * onSaleSeed.buyPrice))
                 .map(userInfoPort::save)
                 .orElseThrow( () -> {throw new RuntimeException("Cannot return UserInfo while plantInAZone");});
     }
@@ -69,15 +73,14 @@ public class ApplicationDomain {
         resolveSales.execute(growthTime);
     }
 
-    public UserInfo acknowledgeInfoSales(HarvestableZone harvestableZone, User user) {
-        var harvestable = harvestableZone
-              .getHarvestablePlanted().map(HarvestablePlanted::getInfoSale)
-              .flatMap(Function.identity()).orElseThrow();
-
-        return userInfoPort.findByEmail(user.getEmail())
-              .map(userInfo -> userInfo.modifyMoney(harvestable.revenue))
-              .map(userInfo -> userInfo.addProfit(harvestable.profit))
-              .map(userInfo -> userInfo.replaceInHarvestableZones(harvestableZone.unplant()))
+    public UserInfo acknowledgeInfoSales(HarvestableZoneType harvestableZoneType, User user) {
+        return userInfoPort.findByEmail(user.getEmail()).map(userInfo -> {
+                  HarvestableZone harvestableZone = userInfo.getHarvestableZone(harvestableZoneType);
+                  InfoSale infoSale = harvestableZone.getInfoSale();
+                  return userInfo.modifyMoney(infoSale.revenue)
+                          .addProfit(infoSale.profit)
+                          .replaceInHarvestableZones(harvestableZone.unplant());
+              })
               .map(userInfoPort::save)
               .orElseThrow();
     }

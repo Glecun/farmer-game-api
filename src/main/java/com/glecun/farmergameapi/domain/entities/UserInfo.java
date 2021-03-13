@@ -1,9 +1,12 @@
 package com.glecun.farmergameapi.domain.entities;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class UserInfo {
@@ -133,5 +136,15 @@ public class UserInfo {
               .filter(harvestableZone -> !harvestableZone.isLocked)
               .map(harvestableZone -> harvestableZone.harvestableZoneType.nbOfZone)
               .collect(Collectors.toList()).stream().reduce(0, Integer::sum);
+    }
+
+    public HarvestableZone getHarvestableZone(HarvestableZoneType harvestableZoneType) {
+        return harvestableZones.stream()
+                .filter(aHarvestableZone -> aHarvestableZone.harvestableZoneType == harvestableZoneType)
+                .findFirst().orElseThrow();
+    }
+
+    public UserInfo plant(HarvestableZoneType harvestableZoneType, OnSaleSeed onSaleSeed, Supplier<LocalDateTime> now) {
+        return replaceInHarvestableZones(getHarvestableZone(harvestableZoneType).plant(onSaleSeed, now));
     }
 }
