@@ -49,4 +49,10 @@ public class UserInfoResource {
         User user = (User) authentication.getPrincipal();
         return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, harvestableZoneTypeJson.harvestableZoneType));
     }
+
+    @PostMapping("/unlock-seed/")
+    public UserInfoJson unlockSeed(@RequestBody SeedEnumJson seedEnumJson, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return UserInfoJson.from(applicationDomain.unlockSeed(user, seedEnumJson.seedEnum));
+    }
 }

@@ -10,12 +10,19 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
+import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
+import static com.glecun.farmergameapi.domain.entities.HarvestableZoneType.getMaxCapacity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -75,5 +82,36 @@ class GenerateMarketInfosTest {
 
         verify(marketInfoPort).save(marketInfoCaptor.capture());
         assertThat(marketInfoCaptor.getValue().onSaleSeeds).isNotEmpty();
+    }
+
+    @Test
+    void should_generate_market_with_demand() {
+        when(getCurrentMarketInfo.execute()).thenReturn(Optional.empty());
+        Supplier<DemandType> demandTypeSupplier = () -> DemandType.HighDemand;
+        ReflectionTestUtils.setField(generateMarketInfos, "randomizeDemandTypeSupplier", demandTypeSupplier);
+        Supplier<Integer> nbFakePlayersSupplier = () -> 10;
+        ReflectionTestUtils.setField(generateMarketInfos, "randomizeNbFakePlayers", nbFakePlayersSupplier);
+        when(userInfoPort.findAll()).thenReturn(List.of(
+                new UserInfo(null, null, 0, 0,
+                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false),
+                                new HarvestableZone(HarvestableZoneType.ZONE_2, null, false),
+                                new HarvestableZone(HarvestableZoneType.ZONE_3, null, true)),
+                        Collections.singletonList(SeedEnum.GREEN_BEAN)),
+                new UserInfo(null, null, 0, 0,
+                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_5, null, false)),
+                        Collections.singletonList(SeedEnum.GREEN_BEAN)),
+                new UserInfo(null, null, 0, 0,
+                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false)),
+                        Collections.emptyList())
+        ));
+
+        generateMarketInfos.execute(GrowthTime.FIRST_GROWTH_TIME);
+
+        Integer usersZoneCapacity = 12 + 12 + 40;
+        Integer fakePlayersZoneCapacity = (12 + 12 + 12 + 12 + 40) * 10;
+
+        verify(marketInfoPort).save(marketInfoCaptor.capture());
+        int nbDemand = Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)DemandType.HighDemand.percentOfNbZones/100));
+        assertThat(marketInfoCaptor.getValue().onSaleSeeds.get(0).demand).isEqualTo(new Demand(DemandType.HighDemand, nbDemand));
     }
 }

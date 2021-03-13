@@ -12,11 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,15 +34,15 @@ class GetRanksInfoTest {
         var user = new User("greg1", "greg.lol@mdr.fr", "pass");
 
         when(userInfoPort.findAll()).thenReturn(List.of(
-                new UserInfo("1", "greg1@mdr.fr", 0, 300, emptyList()),
-                new UserInfo("2", "greg2@mdr.fr", 0, 500, emptyList()),
-                new UserInfo("3", "greg3@mdr.fr", 0, 400, emptyList()),
-                new UserInfo("4", "greg4@mdr.fr", 0, 3000, emptyList()),
-                new UserInfo("5", "greg5@mdr.fr", 0, 200, emptyList()),
-                new UserInfo("6", "greg6@mdr.fr", 0, 50, emptyList()),
-                new UserInfo("7", "greg7@mdr.fr", 0, 5000, emptyList()),
-                new UserInfo("8", "greg8@mdr.fr", 0, 2, emptyList()),
-                new UserInfo("9", "greg9@mdr.fr", 0, 200, emptyList())
+                new UserInfo("1", "greg1@mdr.fr", 0, 300, emptyList(), Collections.emptyList()),
+                new UserInfo("2", "greg2@mdr.fr", 0, 500, emptyList(), Collections.emptyList()),
+                new UserInfo("3", "greg3@mdr.fr", 0, 400, emptyList(), Collections.emptyList()),
+                new UserInfo("4", "greg4@mdr.fr", 0, 3000, emptyList(), Collections.emptyList()),
+                new UserInfo("5", "greg5@mdr.fr", 0, 200, emptyList(), Collections.emptyList()),
+                new UserInfo("6", "greg6@mdr.fr", 0, 50, emptyList(), Collections.emptyList()),
+                new UserInfo("7", "greg7@mdr.fr", 0, 5000, emptyList(), Collections.emptyList()),
+                new UserInfo("8", "greg8@mdr.fr", 0, 2, emptyList(), Collections.emptyList()),
+                new UserInfo("9", "greg9@mdr.fr", 0, 200, emptyList(), Collections.emptyList())
         ));
 
         when(userPort.findAll()).thenReturn(List.of(

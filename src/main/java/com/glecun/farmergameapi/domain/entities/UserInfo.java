@@ -1,11 +1,7 @@
 package com.glecun.farmergameapi.domain.entities;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -15,20 +11,22 @@ public class UserInfo {
     public final double money;
     public final double profit;
     public final List<HarvestableZone> harvestableZones;
+    public final List<SeedEnum> unlockedSeeds;
 
-    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones) {
+    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones, List<SeedEnum> unlockedSeeds) {
         this.id = id;
         this.email = email;
         this.money = money;
         this.profit = profit;
         this.harvestableZones = harvestableZones;
+        this.unlockedSeeds = unlockedSeeds;
     }
 
     public static UserInfo createUserInfo(String email) {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 200, 0, harvestableZones);
+        return new UserInfo(null, email, 200, 0, harvestableZones, Collections.emptyList());
     }
 
     public double getProfit() {
@@ -40,23 +38,30 @@ public class UserInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserInfo userInfo = (UserInfo) o;
-        return Double.compare(userInfo.money, money) == 0 && Double.compare(userInfo.profit, profit) == 0 && Objects.equals(id, userInfo.id) && Objects.equals(email, userInfo.email) && Objects.equals(harvestableZones, userInfo.harvestableZones);
+        return Double.compare(userInfo.money, money) == 0 &&
+                Double.compare(userInfo.profit, profit) == 0 &&
+                Objects.equals(id, userInfo.id) &&
+                Objects.equals(email, userInfo.email) &&
+                Objects.equals(harvestableZones, userInfo.harvestableZones) &&
+                Objects.equals(unlockedSeeds, userInfo.unlockedSeeds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, money, profit, harvestableZones);
+        return Objects.hash(id, email, money, profit, harvestableZones, unlockedSeeds);
     }
 
     @Override
     public String toString() {
-        return "UserInfo{" +
-              "id='" + id + '\'' +
-              ", email='" + email + '\'' +
-              ", money=" + money +
-              ", profit=" + profit +
-              ", harvestableZones=" + harvestableZones +
-              '}';
+        final StringBuffer sb = new StringBuffer("UserInfo{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", email='").append(email).append('\'');
+        sb.append(", money=").append(money);
+        sb.append(", profit=").append(profit);
+        sb.append(", harvestableZones=").append(harvestableZones);
+        sb.append(", unlockedSeeds=").append(unlockedSeeds);
+        sb.append('}');
+        return sb.toString();
     }
 
     public UserInfo replaceInHarvestableZones(HarvestableZone harvestableZoneToReplace) {
@@ -66,7 +71,7 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
     }
 
     public UserInfo modifyMoney(Integer amountMoney) {
@@ -77,11 +82,11 @@ public class UserInfo {
         if (newMoney < 100) {
             newMoney = 100;
         }
-        return new UserInfo(id, email, newMoney, profit, harvestableZones);
+        return new UserInfo(id, email, newMoney, profit, harvestableZones, unlockedSeeds);
     }
 
     public UserInfo addProfit(int amount) {
-        return new UserInfo(id, email, money, profit + amount, harvestableZones);
+        return new UserInfo(id, email, money, profit + amount, harvestableZones, unlockedSeeds);
     }
 
     public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmptyAndOldOnSaleDate(SeedEnum seedEnum) {
@@ -106,7 +111,7 @@ public class UserInfo {
             return harvestableZone;
         }).collect(Collectors.toList());
 
-        return new UserInfo(id, email, money, profit, newHarvestablesZones);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
     }
 
     public boolean hasStillHarvestableSold(SeedEnum seedEnum) {
@@ -128,7 +133,7 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
     }
 
     public int getMaxNbOfZoneCapacity() {
@@ -145,6 +150,22 @@ public class UserInfo {
     }
 
     public UserInfo plant(HarvestableZoneType harvestableZoneType, OnSaleSeed onSaleSeed, Supplier<LocalDateTime> now) {
+        if (!hasUnlockedSeed(onSaleSeed.seedEnum)){
+            throw new RuntimeException("Seed locked");
+        }
         return replaceInHarvestableZones(getHarvestableZone(harvestableZoneType).plant(onSaleSeed, now));
+    }
+
+    public UserInfo unlockSeed(SeedEnum seedEnum) {
+        if(hasUnlockedSeed(seedEnum)) {
+            throw new RuntimeException("Already have this seed");
+        }
+        var newUnlockedSeeds = new ArrayList<>(unlockedSeeds);
+        newUnlockedSeeds.add(seedEnum);
+        return new UserInfo(id, email, money, profit, harvestableZones, newUnlockedSeeds);
+    }
+
+    public boolean hasUnlockedSeed(SeedEnum seedEnum) {
+        return unlockedSeeds.stream().anyMatch(aSeedEnum -> aSeedEnum.equals(seedEnum));
     }
 }

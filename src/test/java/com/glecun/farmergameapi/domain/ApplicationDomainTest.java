@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -51,7 +52,8 @@ class ApplicationDomainTest {
             email,
             200,
             0,
-            harvestableZones
+            harvestableZones,
+            emptyList()
       );
 
       verify(userInfoPort).save(expectedUserInfo);
@@ -66,8 +68,8 @@ class ApplicationDomainTest {
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
-      when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones ));
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, singletonList(SeedEnum.GREEN_BEAN))));
+      when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, Collections.emptyList()));
 
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
@@ -94,7 +96,8 @@ class ApplicationDomainTest {
               "greg.lol@mdr.fr",
               140,
             0,
-            expectedHarvestableZones
+            expectedHarvestableZones,
+            singletonList(SeedEnum.GREEN_BEAN)
       );
 
       verify(userInfoPort).save(expectedUserInfo);
@@ -109,8 +112,8 @@ class ApplicationDomainTest {
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
-      when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones ));
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, singletonList(SeedEnum.GREEN_BEAN))));
+      when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, Collections.emptyList()));
 
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
@@ -137,8 +140,8 @@ class ApplicationDomainTest {
               "greg.lol@mdr.fr",
               100,
               0,
-              expectedHarvestableZones
-      );
+              expectedHarvestableZones,
+              singletonList(SeedEnum.GREEN_BEAN));
 
       verify(userInfoPort).save(expectedUserInfo);
    }
@@ -149,6 +152,30 @@ class ApplicationDomainTest {
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(OnSaleSeed.builder().seedEnum(SeedEnum.GREEN_BEAN).build()), LocalDateTime.now(ZoneOffset.UTC))));
       when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.empty());
       assertThatThrownBy(() -> applicationDomain.plantInAZone(null,SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
+   }
+
+   @Test
+   void should_not_plant_in_a_zone_when_seed_locked() {
+      LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+      Supplier<LocalDateTime> nowSupplier = () -> now;
+      ReflectionTestUtils.setField(applicationDomain, "now", nowSupplier);
+      var user = new User("","greg.lol@mdr.fr","" );
+      var harvestableZones = Arrays.stream(HarvestableZoneType.values())
+              .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
+              .collect(Collectors.toList());
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, singletonList(SeedEnum.ASPARAGUS))));
+
+      OnSaleSeed seedsPlanted = OnSaleSeed.builder()
+              .seedEnum(SeedEnum.GREEN_BEAN)
+              .buyPrice(14)
+              .sellPrice(10)
+              .demand(new Demand(DemandType.SmallDemand, 5))
+              .onSaleDate(null)
+              .willBeSoldDate(now)
+              .build();
+      when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
+
+      assertThatThrownBy(() ->applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN , user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -165,7 +192,7 @@ class ApplicationDomainTest {
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones )));
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, Collections.emptyList())));
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
               .buyPrice(5)
@@ -185,7 +212,7 @@ class ApplicationDomainTest {
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 100, 0, harvestableZones )));
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 100, 0, harvestableZones, Collections.emptyList())));
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
               .buyPrice(200)
@@ -222,9 +249,9 @@ class ApplicationDomainTest {
       );
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 200, 0, singletonList(harvestableZone))
+            new UserInfo("1", "greg.lol@mdr.fr", 200, 0, singletonList(harvestableZone), Collections.emptyList())
       ));
-      when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList()));
+      when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
       applicationDomain.acknowledgeInfoSales(HarvestableZoneType.ZONE_1, user);
 
@@ -233,8 +260,8 @@ class ApplicationDomainTest {
             "greg.lol@mdr.fr",
             210,
             5,
-            singletonList(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false))
-      );
+            singletonList(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false)),
+              Collections.emptyList());
       verify(userInfoPort).save(expectedUserInfo);
    }
 
@@ -244,9 +271,9 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 5000, 0, List.of(harvestableZone1, harvestableZone3))
+            new UserInfo("1", "greg.lol@mdr.fr", 5000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
-      when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList()));
+      when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
       applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3);
 
@@ -258,7 +285,8 @@ class ApplicationDomainTest {
             List.of(
                   new HarvestableZone(HarvestableZoneType.ZONE_1, null, false),
                   new HarvestableZone(HarvestableZoneType.ZONE_3, null, false)
-            )
+            ),
+            Collections.emptyList()
       );
       verify(userInfoPort).save(expectedUserInfo);
    }
@@ -269,7 +297,7 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 100, 0, List.of(harvestableZone1, harvestableZone3))
+            new UserInfo("1", "greg.lol@mdr.fr", 100, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
 
       assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
@@ -281,9 +309,50 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, false);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-              new UserInfo("1", "greg.lol@mdr.fr", 4000, 0, List.of(harvestableZone1, harvestableZone3))
+              new UserInfo("1", "greg.lol@mdr.fr", 4000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
 
       assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
+   }
+
+   @Test
+   void should_unlock_seed() {
+      var user = new User("grewa", "greg.lol@mdr.fr", "pass");
+      when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
+              new UserInfo("1", "greg.lol@mdr.fr", 500, 0, emptyList(), Collections.emptyList())
+      ));
+      when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
+
+      applicationDomain.unlockSeed(user, SeedEnum.ASPARAGUS);
+
+      var expectedUserInfo = new UserInfo(
+              "1",
+              "greg.lol@mdr.fr",
+              490,
+              0,
+              emptyList(),
+              singletonList(SeedEnum.ASPARAGUS)
+      );
+      verify(userInfoPort).save(expectedUserInfo);
+   }
+
+   @Test
+   void should_not_unlock_seed_when_already_have_it() {
+      var user = new User("grewa", "greg.lol@mdr.fr", "pass");
+      when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
+              new UserInfo("1", "greg.lol@mdr.fr", 500, 0, emptyList(), List.of(SeedEnum.ASPARAGUS))
+      ));
+
+      assertThatThrownBy(() -> applicationDomain.unlockSeed(user, SeedEnum.ASPARAGUS)).isInstanceOf(RuntimeException.class);
+   }
+
+   @Test
+   void should_not_unlock_seed_when_not_enough_money() {
+      var user = new User("grewa", "greg.lol@mdr.fr", "pass");
+      when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
+              new UserInfo("1", "greg.lol@mdr.fr", 9, 0, emptyList(), Collections.emptyList())
+      ));
+
+      assertThatThrownBy(() -> applicationDomain.unlockSeed(user, SeedEnum.ASPARAGUS)).isInstanceOf(RuntimeException.class);
    }
 }

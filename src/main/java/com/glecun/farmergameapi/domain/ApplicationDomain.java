@@ -96,4 +96,12 @@ public class ApplicationDomain {
                     .map(userInfoPort::save)
                     .orElseThrow();
     }
+
+    public UserInfo unlockSeed(User user, SeedEnum seedEnum) {
+        return userInfoPort.findByEmail(user.getEmail())
+                .map(userInfo -> userInfo.unlockSeed(seedEnum))
+                .map(userInfo -> userInfo.modifyMoney(-seedEnum.priceToUnlock))
+                .map(userInfoPort::save)
+                .orElseThrow();
+    }
 }
