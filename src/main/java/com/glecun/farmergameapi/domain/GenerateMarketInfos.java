@@ -40,14 +40,17 @@ public class GenerateMarketInfos {
         List<OnSaleSeed> onSaleSeedsToUpdate = Arrays.stream(SeedEnum.values())
                 .filter(seedEnum -> seedEnum.seed.hasGrowthTime(growthTime))
                 .map(seedEnum ->
-                        OnSaleSeed.builder()
-                            .seedEnum(seedEnum)
-                            .buyPrice(seedEnum.seed.randomizeBuyPrice())
-                            .sellPrice(seedEnum.seed.randomizeSellPrice())
-                            .demand(randomizeDemand(seedEnum))
-                            .onSaleDate(LocalDateTime.now(ZoneOffset.UTC))
-                            .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(Double.valueOf(growthTime.growthTime * 60).longValue()))
-                            .build()
+                        {
+                            Demand demand = randomizeDemand(seedEnum);
+                            return OnSaleSeed.builder()
+                                .seedEnum(seedEnum)
+                                .buyPrice(seedEnum.seed.randomizeBuyPrice())
+                                .sellPrice(seedEnum.seed.randomizeSellPrice(demand))
+                                .demand(demand)
+                                .onSaleDate(LocalDateTime.now(ZoneOffset.UTC))
+                                .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(Double.valueOf(growthTime.growthTime * 60).longValue()))
+                                .build();
+                        }
                 )
                 .collect(Collectors.toList());
 

@@ -21,8 +21,8 @@ public class Seed {
         return buyPrice.randomizeInRange();
     }
 
-    public int randomizeSellPrice() {
-        return sellPrice.randomizeInRange();
+    public int randomizeSellPrice(Demand demand) {
+        return sellPrice.randomizeInRangeAccordingTo(demand);
     }
 
     @Override
