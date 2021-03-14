@@ -193,25 +193,23 @@ public class ResolveSales {
         var minNbFakeUser = 0;
         var maxNbFakeUser = NB_OF_FAKE_USERS;
 
-        int twentyPercent = 2;
-
         if(demand.demandType.equals(DemandType.VerySmallDemand)) {
-            maxNbFakeUser = twentyPercent;
+            maxNbFakeUser = 4;
         }
         if(demand.demandType.equals(DemandType.SmallDemand)) {
-            minNbFakeUser = twentyPercent;
-            maxNbFakeUser = 2 * twentyPercent;
+            minNbFakeUser = 2;
+            maxNbFakeUser = 6;
         }
         if(demand.demandType.equals(DemandType.MediumDemand)) {
-            minNbFakeUser = 2 * twentyPercent;
-            maxNbFakeUser = 3 * twentyPercent;
+            minNbFakeUser = 3;
+            maxNbFakeUser = 7;
         }
         if(demand.demandType.equals(DemandType.HighDemand)) {
-            minNbFakeUser = 3 * twentyPercent;
-            maxNbFakeUser = 4 * twentyPercent;
+            minNbFakeUser = 4 ;
+            maxNbFakeUser = 8;
         }
         if(demand.demandType.equals(DemandType.VeryHighDemand)) {
-            minNbFakeUser = 4 * twentyPercent;
+            minNbFakeUser = 6;
         }
 
         Random r = new Random();
