@@ -38,7 +38,8 @@ public class ResolveSales {
         if (!userConcerned.isEmpty()) {
             OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
             long nbOfFakeUserInvolved = randomizeNbFakePlayers.get();
-            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0);
+            int nbOfZoneFakeUserTakes = fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0;
+            int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + nbOfZoneFakeUserTakes;
             int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
             long nbTotalFarmer = userInfoPort.countAll() + NB_OF_FAKE_USERS;
 
@@ -47,7 +48,7 @@ public class ResolveSales {
                     .collect(Collectors.toList());
 
             int nbHarvestableNotSold = nbTotalHarvestable - onSaleSeedConcerned.demand.nbDemand;
-            userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned);
+            userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned,nbOfZoneFakeUserTakes);
 
             userInfoPort.saveAll(userInfosToUpdate);
 
@@ -115,21 +116,35 @@ public class ResolveSales {
                 .orElseThrow();
     }
 
-    private List<UserInfo> maybeReduceSales(List<UserInfo> userInfosToUpdate, int nbHarvestableNotSold, SeedEnum seedEnum, OnSaleSeed onSaleSeedConcerned) {
+    private List<UserInfo> maybeReduceSales(List<UserInfo> userInfosToUpdate, int nbHarvestableNotSold, SeedEnum seedEnum, OnSaleSeed onSaleSeedConcerned, int nbOfZoneFakeUserTakes) {
+
         List<UserInfo> updatedUserInfosToUpdate = new ArrayList<>(userInfosToUpdate);
+
+        List<String> userByNbHarvestable = userInfosToUpdate.stream()
+                .collect(Collectors.toMap(userInfo -> userInfo.email, userInfo -> userInfo.getNbHarvestable(seedEnum)))
+                .entrySet().stream()
+                .map(harvestable -> IntStream.range(0, harvestable.getValue()).boxed().map(integer -> harvestable.getKey()).collect(Collectors.toList()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        if (fakeUserUsed) {
+            List<String> fakeUsers = IntStream.range(0, nbOfZoneFakeUserTakes).boxed().map(integer -> "FAKEUSER").collect(Collectors.toList());
+            userByNbHarvestable.addAll(fakeUsers);
+        }
+
         for (int i = 0 ; i < nbHarvestableNotSold ; i++) {
-            if (isFakeUserNeedToReduce(updatedUserInfosToUpdate) && fakeUserUsed){
+            if(userByNbHarvestable.size() == 0){ break; }
+            int randomIndex = new Random().nextInt(userByNbHarvestable.size());
+            String userSelected = userByNbHarvestable.remove(randomIndex);
+
+            if (userSelected.equals("FAKEUSER")){
                 continue;
             }
-            if(updatedUserInfosToUpdate.stream().noneMatch(userInfo -> userInfo.hasStillHarvestableSold(seedEnum))){
-                break;
-            }
-            UserInfo randomUserInfo;
-            do {
-                randomUserInfo = updatedUserInfosToUpdate.stream().skip((int) (userInfosToUpdate.size() * Math.random())).findAny().orElseThrow();
-            } while (!randomUserInfo.hasStillHarvestableSold(seedEnum));
 
-            var harvestableZoneToUpdate =  randomUserInfo.harvestableZones.stream()
+            var randomUserSelected = updatedUserInfosToUpdate.stream()
+                    .filter(userInfo -> userInfo.email.equals(userSelected))
+                    .findFirst().orElseThrow();
+
+            var harvestableZoneToUpdate =  randomUserSelected.harvestableZones.stream()
                     .map(harvestableZone ->
                             harvestableZone.getHarvestablePlanted()
                                     .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
@@ -154,7 +169,7 @@ public class ResolveSales {
                     .flatMap(Optional::stream)
                     .findAny()
                     .orElseThrow();
-            var userInfoToUpdate = randomUserInfo.SetInfoSale(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale);
+            var userInfoToUpdate = randomUserSelected.SetInfoSale(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale);
 
             updatedUserInfosToUpdate =  updatedUserInfosToUpdate.stream().map(userInfo -> {
                 if (userInfo.id.equals(userInfoToUpdate.id)) {
@@ -164,11 +179,6 @@ public class ResolveSales {
             }).collect(Collectors.toList());
         }
         return updatedUserInfosToUpdate;
-    }
-
-    private boolean isFakeUserNeedToReduce(List<UserInfo> updatedUserInfosToUpdate) {
-        int nbUsers = updatedUserInfosToUpdate.size();
-        return new Random().nextInt(nbUsers + NB_OF_FAKE_USERS) >= nbUsers;
     }
 
     private int nbOfZoneFakeUsersTake(long nbOfFakeUserInvolved) {

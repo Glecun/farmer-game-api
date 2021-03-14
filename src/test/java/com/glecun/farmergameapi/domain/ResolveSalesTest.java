@@ -69,7 +69,7 @@ class ResolveSalesTest {
     }
 
     @Test
-    void should_reduce_sales_when_everyone_satisfied() {
+    void should_reduce_sales_when_not_everyone_satisfied() {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VerySmallDemand, 10)).build();
         HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);

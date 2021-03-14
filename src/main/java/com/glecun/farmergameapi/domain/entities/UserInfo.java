@@ -114,13 +114,15 @@ public class UserInfo {
         return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
     }
 
-    public boolean hasStillHarvestableSold(SeedEnum seedEnum) {
+    public Integer getNbHarvestable(SeedEnum seedEnum) {
         return harvestableZones.stream()
                 .map(HarvestableZone::getHarvestablePlanted)
                 .flatMap(Optional::stream)
+                .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
                 .map(HarvestablePlanted::getInfoSale)
                 .flatMap(Optional::stream)
-                .anyMatch(infoSale -> infoSale.nbHarvestableSold > 0);
+                .map(infoSale -> infoSale.nbHarvestableSold)
+                .reduce(0, Integer::sum);
     }
 
     public UserInfo unlockHarvestableZone(HarvestableZoneType harvestableZoneType) {
