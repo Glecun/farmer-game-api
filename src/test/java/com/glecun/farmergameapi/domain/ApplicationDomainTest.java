@@ -2,7 +2,6 @@ package com.glecun.farmergameapi.domain;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -50,7 +49,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
             null,
             email,
-            200,
+            180,
             0,
             harvestableZones,
             emptyList()
@@ -112,12 +111,12 @@ class ApplicationDomainTest {
       var harvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
               .collect(Collectors.toList());
-      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, singletonList(SeedEnum.GREEN_BEAN))));
+      when(userInfoPort.findByEmail(user.getEmail())).thenReturn(Optional.of(new UserInfo("1", "greg.lol@mdr.fr", 22, 0, harvestableZones, singletonList(SeedEnum.GREEN_BEAN))));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("1", "greg.lol@mdr.fr", 200, 0, harvestableZones, Collections.emptyList()));
 
       OnSaleSeed seedsPlanted = OnSaleSeed.builder()
               .seedEnum(SeedEnum.GREEN_BEAN)
-              .buyPrice(14)
+              .buyPrice(1)
               .sellPrice(10)
               .demand(new Demand(DemandType.SmallDemand, 5))
               .onSaleDate(null)
@@ -138,7 +137,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
               "1",
               "greg.lol@mdr.fr",
-              100,
+              12,
               0,
               expectedHarvestableZones,
               singletonList(SeedEnum.GREEN_BEAN));
@@ -271,7 +270,7 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 5000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
+            new UserInfo("1", "greg.lol@mdr.fr", 30000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
@@ -319,7 +318,7 @@ class ApplicationDomainTest {
    void should_unlock_seed() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-              new UserInfo("1", "greg.lol@mdr.fr", 500, 0, emptyList(), Collections.emptyList())
+              new UserInfo("1", "greg.lol@mdr.fr", 977224720, 0, emptyList(), Collections.emptyList())
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
@@ -328,7 +327,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
               "1",
               "greg.lol@mdr.fr",
-              490,
+              1000,
               0,
               emptyList(),
               singletonList(SeedEnum.ASPARAGUS)

@@ -28,7 +28,6 @@ public class GenerateMarketInfos {
     private final UserInfoPort userInfoPort;
 
     private Supplier<DemandType> randomizeDemandTypeSupplier = this::randomizeDemandType;
-    private Supplier<Integer> randomizeNbFakePlayers = () -> new Random().nextInt(NB_OF_FAKE_USERS + 1);
 
     @Autowired
     public GenerateMarketInfos(MarketInfoPort marketInfoPort, GetCurrentMarketInfo getCurrentMarketInfo, UserInfoPort userInfoPort) {
@@ -69,7 +68,7 @@ public class GenerateMarketInfos {
                 .filter(userInfo -> userInfo.hasUnlockedSeed(seedEnum))
                 .map(UserInfo::getMaxNbOfZoneCapacity)
                 .reduce(0, Integer::sum);
-        Integer fakePlayersZoneCapacity = IntStream.range(0, randomizeNbFakePlayers.get()).map(fakeUserInt -> getMaxCapacity()).reduce(0, Integer::sum);
+        Integer fakePlayersZoneCapacity = IntStream.range(0, NB_OF_FAKE_USERS).map(fakeUserInt -> getMaxCapacity()).reduce(0, Integer::sum);
         return new Demand(randomDemandType,  Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)randomDemandType.percentOfNbZones/100)));
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -18,6 +19,7 @@ public class ResolveSales {
 
     private final UserInfoPort userInfoPort;
     private boolean fakeUserUsed = true;
+    private Supplier<Integer> randomizeNbFakePlayers = () -> new Random().nextInt(NB_OF_FAKE_USERS + 1);
 
     @Autowired
     public ResolveSales(UserInfoPort userInfoPort) {
@@ -35,7 +37,7 @@ public class ResolveSales {
 
         if (!userConcerned.isEmpty()) {
             OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
-            long nbOfFakeUserInvolved = RandomizeNbOfFakeUserParticipating();
+            long nbOfFakeUserInvolved = randomizeNbFakePlayers.get();
             int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + (fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0);
             int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
             long nbTotalFarmer = userInfoPort.countAll() + NB_OF_FAKE_USERS;
@@ -171,15 +173,9 @@ public class ResolveSales {
 
     private int nbOfZoneFakeUsersTake(long nbOfFakeUserInvolved) {
         List<Integer> nbOfZoneList = getNbZonesSumList();
-        return IntStream.range(0, (int)nbOfFakeUserInvolved + 1)
+        return IntStream.range(0, (int)nbOfFakeUserInvolved)
                 .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
                 .reduce(0, Integer::sum);
 
-    }
-
-    private long RandomizeNbOfFakeUserParticipating() {
-        return IntStream.range(0, new Random().nextInt(NB_OF_FAKE_USERS + 1))
-                .filter(value -> new Random().nextInt(2) == 0)
-                .count();
     }
 }

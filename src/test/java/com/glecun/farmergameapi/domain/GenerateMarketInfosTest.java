@@ -17,12 +17,8 @@ import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
-import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
-import static com.glecun.farmergameapi.domain.entities.HarvestableZoneType.getMaxCapacity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -56,7 +52,7 @@ class GenerateMarketInfosTest {
                 .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1))
                 .build();
         OnSaleSeed beet = OnSaleSeed.builder()
-                .seedEnum(SeedEnum.BEETS)
+                .seedEnum(SeedEnum.PEA)
                 .demand(new Demand(DemandType.SmallDemand, 2))
                 .buyPrice(20)
                 .sellPrice(30)
@@ -66,7 +62,7 @@ class GenerateMarketInfosTest {
         MarketInfo marketInfo = new MarketInfo("1", List.of(greenBean, beet), LocalDateTime.now(ZoneOffset.UTC));
         when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(marketInfo));
 
-        generateMarketInfos.execute(GrowthTime.FIRST_GROWTH_TIME);
+        generateMarketInfos.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(marketInfoPort).save(marketInfoCaptor.capture());
         assertThat(marketInfoCaptor.getValue()).isNotEqualTo(marketInfo);
@@ -78,7 +74,7 @@ class GenerateMarketInfosTest {
     void should_generate_market_info_when_no_market_info() {
         when(getCurrentMarketInfo.execute()).thenReturn(Optional.empty());
 
-        generateMarketInfos.execute(GrowthTime.FIRST_GROWTH_TIME);
+        generateMarketInfos.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(marketInfoPort).save(marketInfoCaptor.capture());
         assertThat(marketInfoCaptor.getValue().onSaleSeeds).isNotEmpty();
@@ -89,8 +85,6 @@ class GenerateMarketInfosTest {
         when(getCurrentMarketInfo.execute()).thenReturn(Optional.empty());
         Supplier<DemandType> demandTypeSupplier = () -> DemandType.HighDemand;
         ReflectionTestUtils.setField(generateMarketInfos, "randomizeDemandTypeSupplier", demandTypeSupplier);
-        Supplier<Integer> nbFakePlayersSupplier = () -> 10;
-        ReflectionTestUtils.setField(generateMarketInfos, "randomizeNbFakePlayers", nbFakePlayersSupplier);
         when(userInfoPort.findAll()).thenReturn(List.of(
                 new UserInfo(null, null, 0, 0,
                         List.of(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false),
@@ -105,7 +99,7 @@ class GenerateMarketInfosTest {
                         Collections.emptyList())
         ));
 
-        generateMarketInfos.execute(GrowthTime.FIRST_GROWTH_TIME);
+        generateMarketInfos.execute(GrowthTime.GROWTH_TIME_1);
 
         Integer usersZoneCapacity = 12 + 12 + 40;
         Integer fakePlayersZoneCapacity = (12 + 12 + 12 + 12 + 40) * 10;

@@ -15,7 +15,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Supplier;
 
+import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
@@ -52,7 +54,7 @@ class ResolveSalesTest {
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2, userInfo3));
         when(userInfoPort.countAll()).thenReturn(5L);
 
-        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(userInfoPort).saveAll(userInfoCaptor.capture());
         List<UserInfo> value = userInfoCaptor.getValue();
@@ -78,7 +80,7 @@ class ResolveSalesTest {
         var userInfo3 = new UserInfo("3", "greg3.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted3, false)), Collections.emptyList());
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2, userInfo3));
 
-        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(userInfoPort).saveAll(userInfoCaptor.capture());
         List<UserInfo> userInfos = userInfoCaptor.getValue();
@@ -104,7 +106,7 @@ class ResolveSalesTest {
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1, userInfo2));
         when(userInfoPort.countAll()).thenReturn(1L);
 
-        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(userInfoPort).saveAll(userInfoCaptor.capture());
         List<UserInfo> value = userInfoCaptor.getValue();
@@ -134,7 +136,7 @@ class ResolveSalesTest {
         when(userInfoPort.countAll()).thenReturn(1L);
 
         //WHEN
-        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
 
         //THEN
         verify(userInfoPort).saveAll(userInfoCaptor.capture());
@@ -157,9 +159,33 @@ class ResolveSalesTest {
         when(userInfoPort.findAll()).thenReturn(List.of(userInfo1));
         when(userInfoPort.countAll()).thenReturn(1L);
 
-        resolveSales.execute(GrowthTime.SECOND_GROWTH_TIME);
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
 
         verify(userInfoPort).saveAll(anyList());
+    }
+
+    @Test
+    void should_not_takes_zone_if_no_fake_users() {
+        ReflectionTestUtils.setField(resolveSales, "fakeUserUsed", true);
+        Supplier<Integer> randomizeNbFakePlayers = () -> 0;
+        ReflectionTestUtils.setField(resolveSales, "randomizeNbFakePlayers", randomizeNbFakePlayers);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();
+        HarvestablePlanted harvestablePlanted1 = new HarvestablePlanted(onSaleSeed, now, null);
+        var userInfo1 = new UserInfo("1", "greg.lol@mdr.fr", 200, 0, List.of(new HarvestableZone(HarvestableZoneType.ZONE_2, harvestablePlanted1, false)), Collections.emptyList());
+        when(userInfoPort.findAll()).thenReturn(List.of(userInfo1));
+        when(userInfoPort.countAll()).thenReturn(1L);
+
+        resolveSales.execute(GrowthTime.GROWTH_TIME_1);
+
+        verify(userInfoPort).saveAll(userInfoCaptor.capture());
+        List<UserInfo> value = userInfoCaptor.getValue();
+        InfoSale infoSale = value.get(0).harvestableZones.get(0).getHarvestablePlanted()
+                .flatMap(HarvestablePlanted::getInfoSale).orElseThrow();
+        assertThat(infoSale.nbHarvestableSold).isEqualTo(12);
+        assertThat(infoSale.nbTotalHarvestableSold).isEqualTo(12);
+        assertThat(infoSale.nbFarmer).isEqualTo(1);
+        assertThat(infoSale.nbTotalFarmer).isEqualTo(11);
     }
 
 }

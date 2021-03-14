@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 public enum HarvestableZoneType {
     ZONE_1(false, 12, 0),
-    ZONE_2(false, 12, 0),
-    ZONE_3(true, 12, 2000),
-    ZONE_4(true, 12, 2000),
-    ZONE_5(true, 40, 5000);
+    ZONE_2(true, 12, 400),
+    ZONE_3(true, 12, 27000),
+    ZONE_4(true, 12, 250000),
+    ZONE_5(true, 40, 16000000);
 
     public final boolean lockedByDefault;
     public final int nbOfZone;

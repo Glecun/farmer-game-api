@@ -26,7 +26,7 @@ public class UserInfo {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 200, 0, harvestableZones, Collections.emptyList());
+        return new UserInfo(null, email, 180, 0, harvestableZones, Collections.emptyList());
     }
 
     public double getProfit() {
@@ -79,8 +79,8 @@ public class UserInfo {
         if (newMoney < 0) {
             throw new RuntimeException("Cannot have negative money");
         }
-        if (newMoney < 100) {
-            newMoney = 100;
+        if (newMoney < 12) {
+            newMoney = 12;
         }
         return new UserInfo(id, email, newMoney, profit, harvestableZones, unlockedSeeds);
     }
