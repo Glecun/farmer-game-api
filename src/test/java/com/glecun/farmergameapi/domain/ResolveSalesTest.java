@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
@@ -167,7 +168,7 @@ class ResolveSalesTest {
     @Test
     void should_not_takes_zone_if_no_fake_users() {
         ReflectionTestUtils.setField(resolveSales, "fakeUserUsed", true);
-        Supplier<Integer> randomizeNbFakePlayers = () -> 0;
+        Function<Demand, Integer> randomizeNbFakePlayers = (Demand demand) -> 0;
         ReflectionTestUtils.setField(resolveSales, "randomizeNbFakePlayers", randomizeNbFakePlayers);
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         OnSaleSeed onSaleSeed = OnSaleSeed.builder().willBeSoldDate(now).buyPrice(2).sellPrice(3).seedEnum(SeedEnum.BEETS).demand(new Demand(DemandType.VeryHighDemand, 5000)).build();

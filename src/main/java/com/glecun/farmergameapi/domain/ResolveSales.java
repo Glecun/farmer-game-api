@@ -19,7 +19,7 @@ public class ResolveSales {
 
     private final UserInfoPort userInfoPort;
     private boolean fakeUserUsed = true;
-    private Supplier<Integer> randomizeNbFakePlayers = () -> new Random().nextInt(NB_OF_FAKE_USERS + 1);
+    private Function<Demand, Integer> randomizeNbFakePlayers = this::randomizeNbFakePlayersAccordingToDemand;
 
     @Autowired
     public ResolveSales(UserInfoPort userInfoPort) {
@@ -37,7 +37,7 @@ public class ResolveSales {
 
         if (!userConcerned.isEmpty()) {
             OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
-            long nbOfFakeUserInvolved = randomizeNbFakePlayers.get();
+            long nbOfFakeUserInvolved = randomizeNbFakePlayers.apply(onSaleSeedConcerned.demand);
             int nbOfZoneFakeUserTakes = fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0;
             int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + nbOfZoneFakeUserTakes;
             int nbFarmer = userConcerned.size() + (fakeUserUsed ? (int)nbOfFakeUserInvolved : 0);
@@ -187,5 +187,34 @@ public class ResolveSales {
                 .map(operand -> nbOfZoneList.get(new Random().nextInt(nbOfZoneList.size())))
                 .reduce(0, Integer::sum);
 
+    }
+
+    private int randomizeNbFakePlayersAccordingToDemand(Demand demand) {
+        var minNbFakeUser = 0;
+        var maxNbFakeUser = NB_OF_FAKE_USERS;
+
+        int twentyPercent = 2;
+
+        if(demand.demandType.equals(DemandType.VerySmallDemand)) {
+            maxNbFakeUser = twentyPercent;
+        }
+        if(demand.demandType.equals(DemandType.SmallDemand)) {
+            minNbFakeUser = twentyPercent;
+            maxNbFakeUser = 2 * twentyPercent;
+        }
+        if(demand.demandType.equals(DemandType.MediumDemand)) {
+            minNbFakeUser = 2 * twentyPercent;
+            maxNbFakeUser = 3 * twentyPercent;
+        }
+        if(demand.demandType.equals(DemandType.HighDemand)) {
+            minNbFakeUser = 3 * twentyPercent;
+            maxNbFakeUser = 4 * twentyPercent;
+        }
+        if(demand.demandType.equals(DemandType.VeryHighDemand)) {
+            minNbFakeUser = 4 * twentyPercent;
+        }
+
+        Random r = new Random();
+        return r.ints(minNbFakeUser, (maxNbFakeUser + 1)).findFirst().orElse(minNbFakeUser);
     }
 }

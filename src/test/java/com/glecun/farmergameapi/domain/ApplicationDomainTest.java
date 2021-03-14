@@ -270,7 +270,7 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 30000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
+            new UserInfo("1", "greg.lol@mdr.fr", 21300, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
@@ -318,7 +318,7 @@ class ApplicationDomainTest {
    void should_unlock_seed() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-              new UserInfo("1", "greg.lol@mdr.fr", 977224720, 0, emptyList(), Collections.emptyList())
+              new UserInfo("1", "greg.lol@mdr.fr", 651483480, 0, emptyList(), Collections.emptyList())
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
