@@ -48,7 +48,7 @@ public class ResolveSales {
                     .collect(Collectors.toList());
 
             int nbHarvestableNotSold = nbTotalHarvestable - onSaleSeedConcerned.demand.nbDemand;
-            userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned,nbOfZoneFakeUserTakes);
+            userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned, nbOfZoneFakeUserTakes);
 
             userInfoPort.saveAll(userInfosToUpdate);
 

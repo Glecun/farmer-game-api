@@ -29,7 +29,7 @@ public class CronByGrowthTime {
         applicationDomain.resolveSales(GrowthTime.GROWTH_TIME_1);
         logger.info("Finish GrowthTime_1");
     }
-
+/*  //TODO
     @Scheduled(fixedRate = 40000, initialDelay = 15000)
     public void GrowthTime_2() {
         logger.info("Start GrowthTime_2");
@@ -141,5 +141,5 @@ public class CronByGrowthTime {
         applicationDomain.resolveSales(GrowthTime.GROWTH_TIME_17);
         logger.info("Finish GrowthTime_17");
     }
-
+    */
 }

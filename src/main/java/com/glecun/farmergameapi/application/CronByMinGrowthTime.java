@@ -27,7 +27,7 @@ public class CronByMinGrowthTime {
       applicationDomain.generateMarketInfos(GrowthTime.GROWTH_TIME_1);
       logger.info("Finish MinGrowthTime_1");
    }
-
+/*  //TODO
    @Scheduled(fixedRate = 40000)
    public void MinGrowthTime_2() {
       logger.info("Start MinGrowthTime_2");
@@ -139,4 +139,6 @@ public class CronByMinGrowthTime {
       applicationDomain.generateMarketInfos(GrowthTime.GROWTH_TIME_17);
       logger.info("Finish MinGrowthTime_17");
    }
+   */
+
 }
