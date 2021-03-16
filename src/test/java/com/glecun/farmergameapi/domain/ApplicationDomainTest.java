@@ -80,11 +80,11 @@ class ApplicationDomainTest {
               .build();
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1,SeedEnum.GREEN_BEAN, user);
+      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1,SeedEnum.GREEN_BEAN, user);
 
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
-                 if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1)){
+                 if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1_TIER_1)){
                     return new HarvestableZone(harvestableZoneType, new HarvestablePlanted(seedsPlanted, now, null), harvestableZoneType.lockedByDefault);
                  }
                  return new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault);
@@ -124,11 +124,11 @@ class ApplicationDomainTest {
               .build();
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN , user);
+      applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1, SeedEnum.GREEN_BEAN , user);
 
       var expectedHarvestableZones = Arrays.stream(HarvestableZoneType.values())
               .map(harvestableZoneType -> {
-                 if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1)){
+                 if (harvestableZoneType.equals(HarvestableZoneType.ZONE_1_TIER_1)){
                     return new HarvestableZone(harvestableZoneType, new HarvestablePlanted(seedsPlanted, now, null), harvestableZoneType.lockedByDefault);
                  }
                  return new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault);
@@ -174,7 +174,7 @@ class ApplicationDomainTest {
               .build();
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      assertThatThrownBy(() ->applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN , user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() ->applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1, SeedEnum.GREEN_BEAN , user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -182,7 +182,7 @@ class ApplicationDomainTest {
       var user = new User("","greg.lol@mdr.fr","" );
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", emptyList(), LocalDateTime.now(ZoneOffset.UTC))));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -202,7 +202,7 @@ class ApplicationDomainTest {
               .build();
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), LocalDateTime.now(ZoneOffset.UTC))));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
@@ -223,7 +223,7 @@ class ApplicationDomainTest {
       LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
       when(getCurrentMarketInfo.execute()).thenReturn(Optional.of(new MarketInfo("1", List.of(seedsPlanted), now)));
 
-      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.plantInAZone(HarvestableZoneType.ZONE_1_TIER_1, SeedEnum.GREEN_BEAN, user)).isInstanceOf(RuntimeException.class);
 
    }
 
@@ -238,7 +238,7 @@ class ApplicationDomainTest {
             .willBeSoldDate(LocalDateTime.now(ZoneOffset.UTC))
             .build();
       HarvestableZone harvestableZone = new HarvestableZone(
-            HarvestableZoneType.ZONE_1,
+            HarvestableZoneType.ZONE_1_TIER_1,
             new HarvestablePlanted(
                   seedsPlanted,
                   LocalDateTime.now(ZoneOffset.UTC),
@@ -252,14 +252,14 @@ class ApplicationDomainTest {
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
-      applicationDomain.acknowledgeInfoSales(HarvestableZoneType.ZONE_1, user);
+      applicationDomain.acknowledgeInfoSales(HarvestableZoneType.ZONE_1_TIER_1, user);
 
       var expectedUserInfo = new UserInfo(
             "1",
             "greg.lol@mdr.fr",
             210,
             5,
-            singletonList(new HarvestableZone(HarvestableZoneType.ZONE_1, null, false)),
+            singletonList(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false)),
               Collections.emptyList());
       verify(userInfoPort).save(expectedUserInfo);
    }
@@ -267,23 +267,23 @@ class ApplicationDomainTest {
    @Test
    void should_unlock_HarvestableZone() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
-      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
-      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
+      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false);
+      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
             new UserInfo("1", "greg.lol@mdr.fr", 21300, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
-      applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3);
+      applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3_TIER_1);
 
       var expectedUserInfo = new UserInfo(
             "1",
             "greg.lol@mdr.fr",
-            3000,
+            21290,
             0,
             List.of(
-                  new HarvestableZone(HarvestableZoneType.ZONE_1, null, false),
-                  new HarvestableZone(HarvestableZoneType.ZONE_3, null, false)
+                  new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
+                  new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, false)
             ),
             Collections.emptyList()
       );
@@ -293,25 +293,25 @@ class ApplicationDomainTest {
    @Test
    void should_not_unlock_HarvestableZone_when_not_enough_money() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
-      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
-      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, true);
+      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false);
+      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
             new UserInfo("1", "greg.lol@mdr.fr", 100, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
 
-      assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3_TIER_1)).isInstanceOf(RuntimeException.class);
    }
 
    @Test
    void should_not_unlock_HarvestableZone_when_already_unlocked() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
-      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1, null, false);
-      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3, null, false);
+      HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false);
+      HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, false);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
               new UserInfo("1", "greg.lol@mdr.fr", 4000, 0, List.of(harvestableZone1, harvestableZone3), Collections.emptyList())
       ));
 
-      assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3)).isInstanceOf(RuntimeException.class);
+      assertThatThrownBy(() -> applicationDomain.unlockHarvestableZone(user, HarvestableZoneType.ZONE_3_TIER_1)).isInstanceOf(RuntimeException.class);
    }
 
    @Test

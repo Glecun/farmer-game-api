@@ -6,11 +6,48 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum HarvestableZoneType {
-    ZONE_1(false, 12, 0),
-    ZONE_2(true, 12, 250),
-    ZONE_3(true, 12, 18300),
-    ZONE_4(true, 12, 170000),
-    ZONE_5(true, 40, 11000000);
+    ZONE_1_TIER_1(false, 12, 0),
+    ZONE_2_TIER_1(true, 12, 10),
+    ZONE_3_TIER_1(true, 12, 10),
+    ZONE_4_TIER_1(true, 12, 10),
+    ZONE_5_TIER_1(true, 40, 10),
+
+    ZONE_1_TIER_2(false, 12, 0),
+    ZONE_2_TIER_2(true, 12, 10),
+    ZONE_3_TIER_2(true, 12, 10),
+    ZONE_4_TIER_2(true, 12, 10),
+    ZONE_5_TIER_2(true, 40, 10),
+
+    ZONE_1_TIER_3(false, 12, 0),
+    ZONE_2_TIER_3(true, 12, 10),
+    ZONE_3_TIER_3(true, 12, 10),
+    ZONE_4_TIER_3(true, 12, 10),
+    ZONE_5_TIER_3(true, 40, 10),
+
+    ZONE_1_TIER_4(false, 12, 0),
+    ZONE_2_TIER_4(true, 12, 10),
+    ZONE_3_TIER_4(true, 12, 10),
+    ZONE_4_TIER_4(true, 12, 10),
+    ZONE_5_TIER_4(true, 40, 10),
+
+    ZONE_1_TIER_5(false, 12, 0),
+    ZONE_2_TIER_5(true, 12, 10),
+    ZONE_3_TIER_5(true, 12, 10),
+    ZONE_4_TIER_5(true, 12, 10),
+    ZONE_5_TIER_5(true, 40, 10),
+
+    ZONE_1_TIER_6(false, 12, 0),
+    ZONE_2_TIER_6(true, 12, 10),
+    ZONE_3_TIER_6(true, 12, 10),
+    ZONE_4_TIER_6(true, 12, 10),
+    ZONE_5_TIER_6(true, 40, 10),
+
+
+    ZONE_1_TIER_7(false, 12, 0),
+    ZONE_2_TIER_7(true, 12, 10),
+    ZONE_3_TIER_7(true, 12, 10),
+    ZONE_4_TIER_7(true, 12, 10),
+    ZONE_5_TIER_7(true, 40, 10);
 
     public final boolean lockedByDefault;
     public final int nbOfZone;
