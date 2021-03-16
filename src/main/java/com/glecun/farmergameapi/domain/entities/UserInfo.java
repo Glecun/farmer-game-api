@@ -5,33 +5,36 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.glecun.farmergameapi.domain.entities.TierEnum.*;
+
 public class UserInfo {
     public final String id;
     public final String email;
     public final double money;
     public final double profit;
     public final List<HarvestableZone> harvestableZones;
-    public final List<SeedEnum> unlockedSeeds;
+    public final List<TierEnum> unlockedTiers;
 
-    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones, List<SeedEnum> unlockedSeeds) {
+    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones, List<TierEnum> unlockedTiers) {
         this.id = id;
         this.email = email;
         this.money = money;
         this.profit = profit;
         this.harvestableZones = harvestableZones;
-        this.unlockedSeeds = unlockedSeeds;
+        this.unlockedTiers = unlockedTiers;
     }
 
     public static UserInfo createUserInfo(String email) {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 180, 0, harvestableZones, Collections.emptyList());
+        return new UserInfo(null, email, 180, 0, harvestableZones, Collections.singletonList(TIER_1));
     }
 
     public double getProfit() {
         return profit;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -43,12 +46,12 @@ public class UserInfo {
                 Objects.equals(id, userInfo.id) &&
                 Objects.equals(email, userInfo.email) &&
                 Objects.equals(harvestableZones, userInfo.harvestableZones) &&
-                Objects.equals(unlockedSeeds, userInfo.unlockedSeeds);
+                Objects.equals(unlockedTiers, userInfo.unlockedTiers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, money, profit, harvestableZones, unlockedSeeds);
+        return Objects.hash(id, email, money, profit, harvestableZones, unlockedTiers);
     }
 
     @Override
@@ -59,7 +62,7 @@ public class UserInfo {
         sb.append(", money=").append(money);
         sb.append(", profit=").append(profit);
         sb.append(", harvestableZones=").append(harvestableZones);
-        sb.append(", unlockedSeeds=").append(unlockedSeeds);
+        sb.append(", unlockedTiers=").append(unlockedTiers);
         sb.append('}');
         return sb.toString();
     }
@@ -71,7 +74,7 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
     }
 
     public UserInfo modifyMoney(Integer amountMoney) {
@@ -82,11 +85,11 @@ public class UserInfo {
         if (newMoney < 12) {
             newMoney = 12;
         }
-        return new UserInfo(id, email, newMoney, profit, harvestableZones, unlockedSeeds);
+        return new UserInfo(id, email, newMoney, profit, harvestableZones, unlockedTiers);
     }
 
     public UserInfo addProfit(int amount) {
-        return new UserInfo(id, email, money, profit + amount, harvestableZones, unlockedSeeds);
+        return new UserInfo(id, email, money, profit + amount, harvestableZones, unlockedTiers);
     }
 
     public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmptyAndOldOnSaleDate(SeedEnum seedEnum) {
@@ -111,7 +114,7 @@ public class UserInfo {
             return harvestableZone;
         }).collect(Collectors.toList());
 
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
     }
 
     public Integer getNbHarvestable(SeedEnum seedEnum) {
@@ -129,18 +132,22 @@ public class UserInfo {
         List<HarvestableZone> newHarvestablesZones = harvestableZones.stream().map(harvestableZone -> {
             if (harvestableZone.hasType(harvestableZoneType)) {
                 if(!harvestableZone.isLocked) {
-                    throw new RuntimeException("zone already unlocked");
+                    throw new RuntimeException("Zone already unlocked");
+                }
+                if(!hasTierOfZoneUnlocked(harvestableZoneType)) {
+                    throw new RuntimeException("Tier locked for this zone");
                 }
                 return new HarvestableZone(harvestableZoneType, harvestableZone.getHarvestablePlanted().orElse(null), false);
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedSeeds);
+        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
     }
 
-    public int getMaxNbOfZoneCapacity() {
+    public int getMaxNbOfZoneCapacityForThisSeed(SeedEnum seedEnum) {
         return harvestableZones.stream()
-              .filter(harvestableZone -> !harvestableZone.isLocked)
+              .filter(harvestableZone -> hasUnlockedZone(harvestableZone.harvestableZoneType))
+              .filter(harvestableZone -> isSeedAndZoneInSameTier(harvestableZone.harvestableZoneType, seedEnum))
               .map(harvestableZone -> harvestableZone.harvestableZoneType.nbOfZone)
               .collect(Collectors.toList()).stream().reduce(0, Integer::sum);
     }
@@ -155,19 +162,38 @@ public class UserInfo {
         if (!hasUnlockedSeed(onSaleSeed.seedEnum)){
             throw new RuntimeException("Seed locked");
         }
+        if (!hasUnlockedZone(harvestableZoneType)){
+            throw new RuntimeException("Zone locked");
+        }
+        if (!isSeedAndZoneInSameTier(harvestableZoneType, onSaleSeed.seedEnum)){
+            throw new RuntimeException("Zone and Seed has to be in same tier");
+        }
         return replaceInHarvestableZones(getHarvestableZone(harvestableZoneType).plant(onSaleSeed, now));
     }
 
-    public UserInfo unlockSeed(SeedEnum seedEnum) {
-        if(hasUnlockedSeed(seedEnum)) {
-            throw new RuntimeException("Already have this seed");
+    public UserInfo unlockTier(TierEnum tierEnum) {
+        if(hasUnlockedTier(tierEnum)) {
+            throw new RuntimeException("Already have this tier unlocked");
         }
-        var newUnlockedSeeds = new ArrayList<>(unlockedSeeds);
-        newUnlockedSeeds.add(seedEnum);
-        return new UserInfo(id, email, money, profit, harvestableZones, newUnlockedSeeds);
+        var newUnlockedTiers = new ArrayList<>(unlockedTiers);
+        newUnlockedTiers.add(tierEnum);
+        return new UserInfo(id, email, money, profit, harvestableZones, newUnlockedTiers);
     }
 
     public boolean hasUnlockedSeed(SeedEnum seedEnum) {
-        return unlockedSeeds.stream().anyMatch(aSeedEnum -> aSeedEnum.equals(seedEnum));
+        return unlockedTiers.stream().anyMatch(tierEnum -> tierEnum.seeds.contains(seedEnum));
+    }
+
+    public boolean hasUnlockedZone(HarvestableZoneType harvestableZoneType) {
+        return  hasTierOfZoneUnlocked(harvestableZoneType)
+                && !getHarvestableZone(harvestableZoneType).isLocked ;
+    }
+
+    private boolean hasTierOfZoneUnlocked(HarvestableZoneType harvestableZoneType) {
+        return unlockedTiers.stream().anyMatch(tierEnum -> tierEnum.zones.contains(harvestableZoneType));
+    }
+
+    public boolean hasUnlockedTier(TierEnum tierEnum) {
+        return unlockedTiers.stream().anyMatch(aTierEnum -> aTierEnum.equals(tierEnum));
     }
 }

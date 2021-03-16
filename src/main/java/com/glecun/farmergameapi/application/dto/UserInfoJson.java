@@ -1,5 +1,6 @@
 package com.glecun.farmergameapi.application.dto;
 import com.glecun.farmergameapi.domain.entities.SeedEnum;
+import com.glecun.farmergameapi.domain.entities.TierEnum;
 import com.glecun.farmergameapi.domain.entities.UserInfo;
 
 import java.util.List;
@@ -9,13 +10,13 @@ public class UserInfoJson {
     public final String email;
     public final double money;
     public final List<HarvestableZoneJson> harvestableZones;
-    public final List<SeedEnum> unlockedSeeds;
+    public final List<TierEnum> unlockedTiers;
 
-    public UserInfoJson(String email, double money, List<HarvestableZoneJson> harvestableZones, List<SeedEnum> unlockedSeeds) {
+    public UserInfoJson(String email, double money, List<HarvestableZoneJson> harvestableZones, List<TierEnum> unlockedTiers) {
         this.email = email;
         this.money = money;
         this.harvestableZones = harvestableZones;
-        this.unlockedSeeds = unlockedSeeds;
+        this.unlockedTiers = unlockedTiers;
     }
 
     public static UserInfoJson from(UserInfo userInfo) {
@@ -23,7 +24,7 @@ public class UserInfoJson {
                 userInfo.email,
                 userInfo.money,
                 userInfo.harvestableZones.stream().map(HarvestableZoneJson::from).collect(Collectors.toList()),
-                userInfo.unlockedSeeds
+                userInfo.unlockedTiers
         );
     }
 }

@@ -59,22 +59,4 @@ public enum HarvestableZoneType {
         this.nbOfZone = nbOfZone;
         this.price = price;
     }
-
-    public static Integer getMaxCapacity() {
-        return Arrays.stream(HarvestableZoneType.values())
-                .map(harvestableZoneType -> harvestableZoneType.nbOfZone)
-                .collect(Collectors.toList()).stream().reduce(0, Integer::sum);
-    }
-
-    public static List<Integer> getNbZonesSumList() {
-        return List.of(10, 20, 30); //TODO
-        /*
-        return Arrays.stream(HarvestableZoneType.values())
-                .map(harvestableZoneType -> harvestableZoneType.nbOfZone)
-                .reduce(new ArrayList<Integer>(), (nbOfZonesSumList, nbOfZone) -> {
-                    var newNbOfZonesSumList = new ArrayList<Integer>(nbOfZonesSumList);
-                    newNbOfZonesSumList.add(newNbOfZonesSumList.stream().reduce(0, Integer::sum) + nbOfZone);
-                    return newNbOfZonesSumList;
-                }, (a, b) -> b);*/
-    }
 }

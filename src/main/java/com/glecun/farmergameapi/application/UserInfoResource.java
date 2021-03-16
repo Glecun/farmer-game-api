@@ -4,6 +4,7 @@ import com.glecun.farmergameapi.application.dto.*;
 import com.glecun.farmergameapi.application.dto.post.HarvestableZoneTypeJson;
 import com.glecun.farmergameapi.application.dto.post.PlantInAZonePostJson;
 import com.glecun.farmergameapi.application.dto.post.SeedEnumJson;
+import com.glecun.farmergameapi.application.dto.post.TierEnumJson;
 import com.glecun.farmergameapi.domain.ApplicationDomain;
 import com.glecun.farmergameapi.domain.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,9 @@ public class UserInfoResource {
         return UserInfoJson.from(applicationDomain.unlockHarvestableZone(user, harvestableZoneTypeJson.harvestableZoneType));
     }
 
-    @PostMapping("/unlock-seed/")
-    public UserInfoJson unlockSeed(@RequestBody SeedEnumJson seedEnumJson, Authentication authentication) {
+    @PostMapping("/unlock-tier/")
+    public UserInfoJson unlockTier(@RequestBody TierEnumJson tierEnumJson, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return UserInfoJson.from(applicationDomain.unlockSeed(user, seedEnumJson.seedEnum));
+        return UserInfoJson.from(applicationDomain.unlockTier(user, tierEnumJson.tierEnum));
     }
 }

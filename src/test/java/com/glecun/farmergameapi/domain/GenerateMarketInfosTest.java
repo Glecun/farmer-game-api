@@ -90,19 +90,20 @@ class GenerateMarketInfosTest {
                         List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
                                 new HarvestableZone(HarvestableZoneType.ZONE_2_TIER_1, null, false),
                                 new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, true)),
-                        Collections.singletonList(SeedEnum.GREEN_BEAN)),
+                        Collections.singletonList(TierEnum.TIER_1)),
                 new UserInfo(null, null, 0, 0,
                         List.of(new HarvestableZone(HarvestableZoneType.ZONE_5_TIER_1, null, false)),
-                        Collections.singletonList(SeedEnum.GREEN_BEAN)),
+                        Collections.singletonList(TierEnum.TIER_1)),
                 new UserInfo(null, null, 0, 0,
-                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false)),
+                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
+                                new HarvestableZone(HarvestableZoneType.ZONE_2_TIER_2, null, false)),
                         Collections.emptyList())
         ));
 
         generateMarketInfos.execute(GrowthTime.GROWTH_TIME_1);
 
         Integer usersZoneCapacity = 12 + 12 + 40;
-        Integer fakePlayersZoneCapacity = (12 + 12 + 12 + 12 + 40) * 7 * 10;
+        Integer fakePlayersZoneCapacity = (12 + 12 + 12 + 12 + 40) * 10;
 
         verify(marketInfoPort).save(marketInfoCaptor.capture());
         int nbDemand = Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)DemandType.HighDemand.percentOfNbZones/100));
