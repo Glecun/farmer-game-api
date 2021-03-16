@@ -97,10 +97,10 @@ public class ApplicationDomain {
                     .orElseThrow();
     }
 
-    public UserInfo unlockSeed(User user, SeedEnum seedEnum) {
+    public UserInfo unlockTier(User user, TierEnum tierEnum) {
         return userInfoPort.findByEmail(user.getEmail())
-                .map(userInfo -> userInfo.unlockSeed(seedEnum))
-                .map(userInfo -> userInfo.modifyMoney(-seedEnum.priceToUnlock))
+                .map(userInfo -> userInfo.unlockTier(tierEnum))
+                .map(userInfo -> userInfo.modifyMoney(-tierEnum.priceToUnlock))
                 .map(userInfoPort::save)
                 .orElseThrow();
     }
