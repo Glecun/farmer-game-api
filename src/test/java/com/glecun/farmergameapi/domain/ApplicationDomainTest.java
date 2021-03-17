@@ -49,7 +49,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
             null,
             email,
-            180,
+            50,
             0,
             harvestableZones,
             singletonList(TierEnum.TIER_1)
@@ -313,7 +313,7 @@ class ApplicationDomainTest {
       HarvestableZone harvestableZone1 = new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false);
       HarvestableZone harvestableZone3 = new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, true);
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-            new UserInfo("1", "greg.lol@mdr.fr", 21300, 0, List.of(harvestableZone1, harvestableZone3), singletonList(TierEnum.TIER_1))
+            new UserInfo("1", "greg.lol@mdr.fr", 500, 0, List.of(harvestableZone1, harvestableZone3), singletonList(TierEnum.TIER_1))
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
@@ -322,7 +322,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
             "1",
             "greg.lol@mdr.fr",
-            21290,
+            20,
             0,
             List.of(
                   new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
@@ -371,7 +371,7 @@ class ApplicationDomainTest {
    void should_unlock_tier() {
       var user = new User("grewa", "greg.lol@mdr.fr", "pass");
       when(userInfoPort.findByEmail("greg.lol@mdr.fr")).thenReturn(Optional.of(
-              new UserInfo("1", "greg.lol@mdr.fr", 1010, 0, emptyList(), singletonList(TierEnum.TIER_1))
+              new UserInfo("1", "greg.lol@mdr.fr", 3000, 0, emptyList(), singletonList(TierEnum.TIER_1))
       ));
       when(userInfoPort.save(any())).thenReturn(new UserInfo("osef", "osef", 200, 0, emptyList(), Collections.emptyList()));
 
@@ -380,7 +380,7 @@ class ApplicationDomainTest {
       var expectedUserInfo = new UserInfo(
               "1",
               "greg.lol@mdr.fr",
-              1000,
+              500,
               0,
               emptyList(),
              List.of(TierEnum.TIER_1, TierEnum.TIER_2)
