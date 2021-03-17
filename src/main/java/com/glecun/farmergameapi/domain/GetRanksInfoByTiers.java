@@ -1,9 +1,6 @@
 package com.glecun.farmergameapi.domain;
 
-import com.glecun.farmergameapi.domain.entities.RankInfo;
-import com.glecun.farmergameapi.domain.entities.RanksInfo;
-import com.glecun.farmergameapi.domain.entities.User;
-import com.glecun.farmergameapi.domain.entities.UserInfo;
+import com.glecun.farmergameapi.domain.entities.*;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import com.glecun.farmergameapi.domain.port.UserPort;
 import org.springframework.stereotype.Service;
@@ -17,21 +14,36 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 
 @Service
-public class GetRanksInfo {
+public class GetRanksInfoByTiers {
     private final UserPort userPort;
     private final UserInfoPort userInfoPort;
 
-    public GetRanksInfo(UserPort userPort, UserInfoPort userInfoPort) {
+    public GetRanksInfoByTiers(UserPort userPort, UserInfoPort userInfoPort) {
         this.userPort = userPort;
         this.userInfoPort = userInfoPort;
     }
 
-    public RanksInfo execute(User user) {
+    public RanksInfoByTiers execute(User user) {
         Map<String, String> userMap = userPort.findAll().stream().collect(Collectors.toMap(User::getEmail, User::getUsername));
-        List<RankInfo> allSortedRankInfo = rank(userInfoPort.findAll().stream(), UserInfo::getProfit,reverseOrder())
+        List<UserInfo> userInfos = userInfoPort.findAll();
+
+        List<RankInfoByTier> rankInfoByTiers = Arrays.stream(TierEnum.values()).map(tierEnum -> {
+            Function<UserInfo, Double> getProfitByTier = (UserInfo userInfo) -> userInfo.getProfit(tierEnum);
+            RanksInfo ranksInfo = calculateRanksInfo(user, userMap, userInfos, getProfitByTier);
+            return new RankInfoByTier(tierEnum, ranksInfo);
+        }).collect(Collectors.toList());
+
+        return new RanksInfoByTiers(
+                calculateRanksInfo(user, userMap, userInfos, UserInfo::getGlobalProfit),
+                rankInfoByTiers
+        );
+    }
+
+    private RanksInfo calculateRanksInfo(User user, Map<String, String> userMap, List<UserInfo> userInfos, Function<UserInfo, Double> getProfit) {
+        List<RankInfo> allSortedRankInfo = rank(userInfos.stream(), getProfit, reverseOrder())
                 .entrySet().stream()
                 .map(integerListEntry -> integerListEntry.getValue().stream()
-                        .map(userInfo -> new RankInfo(integerListEntry.getKey(), userMap.get(userInfo.email), userInfo.profit))
+                        .map(userInfo -> new RankInfo(integerListEntry.getKey(), userMap.get(userInfo.email), getProfit.apply(userInfo)))
                         .collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -40,7 +52,8 @@ public class GetRanksInfo {
         List<RankInfo> betterRankInfo = allSortedRankInfo.stream().filter(rankInfo -> rankInfo.profit > myRankInfo.profit).collect(Collectors.toList());
         List<RankInfo> betterNearMeRankInfo = betterRankInfo.stream().skip(betterRankInfo.size() >= 2 ? betterRankInfo.size() - 2 : betterRankInfo.size()).collect(Collectors.toList());
         List<RankInfo> worseNearMeRankInfo = allSortedRankInfo.stream().filter(rankInfo -> rankInfo.profit <= myRankInfo.profit && !rankInfo.username.equals(myRankInfo.username)).limit(2).collect(Collectors.toList());
-        return new RanksInfo(allSortedRankInfo, myRankInfo, betterNearMeRankInfo, worseNearMeRankInfo, allSortedRankInfo.size());
+        long nbAllFarmers = allSortedRankInfo.stream().filter(rankInfo -> rankInfo.profit > 0).count();
+        return new RanksInfo(allSortedRankInfo, myRankInfo, betterNearMeRankInfo, worseNearMeRankInfo, nbAllFarmers);
     }
 
     static <T, V> SortedMap<Integer, List<T>> rank(Stream<T> stream, Function<T, V> propertyExtractor, Comparator<V> propertyComparator) {

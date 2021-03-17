@@ -1,6 +1,6 @@
 package com.glecun.farmergameapi.infrastructure.dto;
 
-import com.glecun.farmergameapi.domain.entities.SeedEnum;
+import com.glecun.farmergameapi.domain.entities.ProfitsByTiers;
 import com.glecun.farmergameapi.domain.entities.TierEnum;
 import com.glecun.farmergameapi.domain.entities.UserInfo;
 import org.springframework.data.annotation.Id;
@@ -14,15 +14,15 @@ public class UserInfoMongo {
     public String id;
     public final String email;
     public final double money;
-    public final double profit;
+    public final ProfitsByTiersMongo profitsByTiers;
     public final List<HarvestableZoneMongo> harvestableZones;
     public final List<TierEnum> unlockedTiers;
 
-    public UserInfoMongo(String id, String email, double money, double profit, List<HarvestableZoneMongo> harvestableZones, List<TierEnum> unlockedTiers) {
+    public UserInfoMongo(String id, String email, double money, ProfitsByTiersMongo profitsByTiers, List<HarvestableZoneMongo> harvestableZones, List<TierEnum> unlockedTiers) {
         this.id = id;
         this.email = email;
         this.money = money;
-        this.profit = profit;
+        this.profitsByTiers = profitsByTiers;
         this.harvestableZones = harvestableZones;
         this.unlockedTiers = unlockedTiers;
     }
@@ -32,7 +32,7 @@ public class UserInfoMongo {
               userInfo.id,
               userInfo.email,
               userInfo.money,
-              userInfo.profit,
+              ProfitsByTiersMongo.from(userInfo.profits),
               userInfo.harvestableZones.stream().map(HarvestableZoneMongo::from).collect(Collectors.toList()),
               userInfo.unlockedTiers
         );
@@ -43,7 +43,7 @@ public class UserInfoMongo {
               id,
               email,
               money,
-              profit,
+              profitsByTiers.toProfitsByTiers(),
               harvestableZones.stream().map(HarvestableZoneMongo::toHarvestableZone).collect(Collectors.toList()),
               unlockedTiers
         );

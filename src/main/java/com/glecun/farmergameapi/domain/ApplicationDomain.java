@@ -3,11 +3,9 @@ package com.glecun.farmergameapi.domain;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.glecun.farmergameapi.domain.entities.*;
-import com.glecun.farmergameapi.domain.port.MarketInfoPort;
 import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,19 +22,19 @@ public class ApplicationDomain {
     private final GetCurrentMarketInfo getCurrentMarketInfo;
     private final GenerateMarketInfos generateMarketInfos;
     private final ResolveSales resolveSales;
-    private final GetRanksInfo getRanksInfo;
+    private final GetRanksInfoByTiers getRanksInfoByTiers;
 
     private final UserInfoPort userInfoPort;
 
     public Supplier<LocalDateTime> now = () -> LocalDateTime.now(ZoneOffset.UTC);
 
     @Autowired
-    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, GetRanksInfo getRanksInfo, UserInfoPort userInfoPort) {
+    public ApplicationDomain(SignUp signUp, GetCurrentMarketInfo getCurrentMarketInfo, GenerateMarketInfos generateMarketInfos, ResolveSales resolveSales, GetRanksInfoByTiers getRanksInfoByTiers, UserInfoPort userInfoPort) {
         this.signUp = signUp;
         this.getCurrentMarketInfo = getCurrentMarketInfo;
         this.generateMarketInfos = generateMarketInfos;
         this.resolveSales = resolveSales;
-        this.getRanksInfo = getRanksInfo;
+        this.getRanksInfoByTiers = getRanksInfoByTiers;
         this.userInfoPort = userInfoPort;
     }
 
@@ -75,18 +73,19 @@ public class ApplicationDomain {
 
     public UserInfo acknowledgeInfoSales(HarvestableZoneType harvestableZoneType, User user) {
         return userInfoPort.findByEmail(user.getEmail()).map(userInfo -> {
-                  HarvestableZone harvestableZone = userInfo.getHarvestableZone(harvestableZoneType);
-                  InfoSale infoSale = harvestableZone.getInfoSale();
-                  return userInfo.modifyMoney(infoSale.revenue)
-                          .addProfit(infoSale.profit)
-                          .replaceInHarvestableZones(harvestableZone.unplant());
-              })
-              .map(userInfoPort::save)
-              .orElseThrow();
+            HarvestableZone harvestableZone = userInfo.getHarvestableZone(harvestableZoneType);
+            InfoSale infoSale = harvestableZone.getInfoSale();
+            TierEnum tierOfZone = TierEnum.getTierOfZone(harvestableZone.harvestableZoneType);
+            return userInfo.modifyMoney(infoSale.revenue)
+                    .addProfit(infoSale.profit, tierOfZone)
+                    .replaceInHarvestableZones(harvestableZone.unplant());
+        })
+                .map(userInfoPort::save)
+                .orElseThrow();
     }
 
-    public RanksInfo getRanksInfo(User user) {
-        return getRanksInfo.execute(user);
+    public RanksInfoByTiers getRanksInfoByTiers(User user) {
+        return getRanksInfoByTiers.execute(user);
     }
 
     public UserInfo unlockHarvestableZone(User user, HarvestableZoneType harvestableZoneType) {

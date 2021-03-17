@@ -86,16 +86,13 @@ class GenerateMarketInfosTest {
         Supplier<DemandType> demandTypeSupplier = () -> DemandType.HighDemand;
         ReflectionTestUtils.setField(generateMarketInfos, "randomizeDemandTypeSupplier", demandTypeSupplier);
         when(userInfoPort.findAll()).thenReturn(List.of(
-                new UserInfo(null, null, 0, 0,
-                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
+                new UserInfo(null, null, 0, null, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
                                 new HarvestableZone(HarvestableZoneType.ZONE_2_TIER_1, null, false),
                                 new HarvestableZone(HarvestableZoneType.ZONE_3_TIER_1, null, true)),
                         Collections.singletonList(TierEnum.TIER_1)),
-                new UserInfo(null, null, 0, 0,
-                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_5_TIER_1, null, false)),
+                new UserInfo(null, null, 0, null, List.of(new HarvestableZone(HarvestableZoneType.ZONE_5_TIER_1, null, false)),
                         Collections.singletonList(TierEnum.TIER_1)),
-                new UserInfo(null, null, 0, 0,
-                        List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
+                new UserInfo(null, null, 0, null, List.of(new HarvestableZone(HarvestableZoneType.ZONE_1_TIER_1, null, false),
                                 new HarvestableZone(HarvestableZoneType.ZONE_2_TIER_2, null, false)),
                         Collections.emptyList())
         ));

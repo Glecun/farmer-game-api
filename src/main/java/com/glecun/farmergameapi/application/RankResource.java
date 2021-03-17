@@ -1,9 +1,7 @@
 package com.glecun.farmergameapi.application;
 
-import com.glecun.farmergameapi.application.dto.MarketInfoJson;
-import com.glecun.farmergameapi.application.dto.RanksInfoJson;
+import com.glecun.farmergameapi.application.dto.RanksInfoByTiersJson;
 import com.glecun.farmergameapi.domain.ApplicationDomain;
-import com.glecun.farmergameapi.domain.entities.RanksInfo;
 import com.glecun.farmergameapi.domain.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,8 +20,8 @@ public class RankResource {
     }
 
     @GetMapping("/")
-    public RanksInfoJson getRanksInfo(Authentication authentication) {
+    public RanksInfoByTiersJson getRanksInfoByTiers(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return RanksInfoJson.from(applicationDomain.getRanksInfo(user));
+        return RanksInfoByTiersJson.from(applicationDomain.getRanksInfoByTiers(user));
     }
 }

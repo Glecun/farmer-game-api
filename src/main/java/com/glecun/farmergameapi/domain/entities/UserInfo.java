@@ -11,15 +11,15 @@ public class UserInfo {
     public final String id;
     public final String email;
     public final double money;
-    public final double profit;
+    public final ProfitsByTiers profits;
     public final List<HarvestableZone> harvestableZones;
     public final List<TierEnum> unlockedTiers;
 
-    public UserInfo(String id, String email, double money, double profit, List<HarvestableZone> harvestableZones, List<TierEnum> unlockedTiers) {
+    public UserInfo(String id, String email, double money, ProfitsByTiers profits, List<HarvestableZone> harvestableZones, List<TierEnum> unlockedTiers) {
         this.id = id;
         this.email = email;
         this.money = money;
-        this.profit = profit;
+        this.profits = profits;
         this.harvestableZones = harvestableZones;
         this.unlockedTiers = unlockedTiers;
     }
@@ -28,11 +28,7 @@ public class UserInfo {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 50, 0, harvestableZones, Collections.singletonList(TIER_1));
-    }
-
-    public double getProfit() {
-        return profit;
+        return new UserInfo(null, email, 50, ProfitsByTiers.create(), harvestableZones, Collections.singletonList(TIER_1));
     }
 
 
@@ -42,16 +38,16 @@ public class UserInfo {
         if (o == null || getClass() != o.getClass()) return false;
         UserInfo userInfo = (UserInfo) o;
         return Double.compare(userInfo.money, money) == 0 &&
-                Double.compare(userInfo.profit, profit) == 0 &&
                 Objects.equals(id, userInfo.id) &&
                 Objects.equals(email, userInfo.email) &&
+                Objects.equals(profits, userInfo.profits) &&
                 Objects.equals(harvestableZones, userInfo.harvestableZones) &&
                 Objects.equals(unlockedTiers, userInfo.unlockedTiers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, money, profit, harvestableZones, unlockedTiers);
+        return Objects.hash(id, email, money, profits, harvestableZones, unlockedTiers);
     }
 
     @Override
@@ -60,7 +56,7 @@ public class UserInfo {
         sb.append("id='").append(id).append('\'');
         sb.append(", email='").append(email).append('\'');
         sb.append(", money=").append(money);
-        sb.append(", profit=").append(profit);
+        sb.append(", profits=").append(profits);
         sb.append(", harvestableZones=").append(harvestableZones);
         sb.append(", unlockedTiers=").append(unlockedTiers);
         sb.append('}');
@@ -74,7 +70,7 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
+        return new UserInfo(id, email, money, profits, newHarvestablesZones, unlockedTiers);
     }
 
     public UserInfo modifyMoney(Integer amountMoney) {
@@ -85,11 +81,11 @@ public class UserInfo {
         if (newMoney < 12) {
             newMoney = 12;
         }
-        return new UserInfo(id, email, newMoney, profit, harvestableZones, unlockedTiers);
+        return new UserInfo(id, email, newMoney, profits, harvestableZones, unlockedTiers);
     }
 
-    public UserInfo addProfit(int amount) {
-        return new UserInfo(id, email, money, profit + amount, harvestableZones, unlockedTiers);
+    public UserInfo addProfit(int amount, TierEnum tierOfZone) {
+        return new UserInfo(id, email, money, profits.addProfit(amount, tierOfZone), harvestableZones, unlockedTiers);
     }
 
     public boolean hasHarvestablePlantedWithSeedEnumAndInfoSaleEmptyAndOldOnSaleDate(SeedEnum seedEnum) {
@@ -114,7 +110,7 @@ public class UserInfo {
             return harvestableZone;
         }).collect(Collectors.toList());
 
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
+        return new UserInfo(id, email, money, profits, newHarvestablesZones, unlockedTiers);
     }
 
     public Integer getNbHarvestable(SeedEnum seedEnum) {
@@ -141,7 +137,7 @@ public class UserInfo {
             }
             return harvestableZone;
         }).collect(Collectors.toList());
-        return new UserInfo(id, email, money, profit, newHarvestablesZones, unlockedTiers);
+        return new UserInfo(id, email, money, profits, newHarvestablesZones, unlockedTiers);
     }
 
     public int getMaxNbOfZoneCapacityForThisSeed(SeedEnum seedEnum) {
@@ -177,7 +173,7 @@ public class UserInfo {
         }
         var newUnlockedTiers = new ArrayList<>(unlockedTiers);
         newUnlockedTiers.add(tierEnum);
-        return new UserInfo(id, email, money, profit, harvestableZones, newUnlockedTiers);
+        return new UserInfo(id, email, money, profits, harvestableZones, newUnlockedTiers);
     }
 
     public boolean hasUnlockedSeed(SeedEnum seedEnum) {
@@ -195,5 +191,13 @@ public class UserInfo {
 
     public boolean hasUnlockedTier(TierEnum tierEnum) {
         return unlockedTiers.stream().anyMatch(aTierEnum -> aTierEnum.equals(tierEnum));
+    }
+
+    public double getProfit(TierEnum tierEnum) {
+        return profits.getProfit(tierEnum);
+    }
+
+    public Double getGlobalProfit() {
+        return profits.globalProfit;
     }
 }

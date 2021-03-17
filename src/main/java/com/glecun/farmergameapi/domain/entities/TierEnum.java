@@ -29,4 +29,8 @@ public enum TierEnum {
     public static boolean isSeedAndZoneInSameTier(HarvestableZoneType zone, SeedEnum seed) {
         return Arrays.stream(TierEnum.values()).anyMatch(tierEnum -> tierEnum.zones.contains(zone) && tierEnum.seeds.contains(seed));
     }
+
+    public static TierEnum getTierOfZone(HarvestableZoneType zone) {
+        return Arrays.stream(TierEnum.values()).filter(tierEnum -> tierEnum.zones.contains(zone)).findFirst().orElseThrow();
+    }
 }
