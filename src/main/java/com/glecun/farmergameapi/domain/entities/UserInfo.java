@@ -28,7 +28,7 @@ public class UserInfo {
         List<HarvestableZone> harvestableZones = Arrays.stream(HarvestableZoneType.values())
                 .map(harvestableZoneType -> new HarvestableZone(harvestableZoneType, null, harvestableZoneType.lockedByDefault))
                 .collect(Collectors.toList());
-        return new UserInfo(null, email, 180, 0, harvestableZones, Collections.singletonList(TIER_1));
+        return new UserInfo(null, email, 50, 0, harvestableZones, Collections.singletonList(TIER_1));
     }
 
     public double getProfit() {
