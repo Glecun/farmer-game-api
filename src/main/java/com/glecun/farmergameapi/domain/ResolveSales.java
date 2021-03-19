@@ -5,6 +5,8 @@ import com.glecun.farmergameapi.domain.port.UserInfoPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.glecun.farmergameapi.domain.ApplicationDomain.NB_OF_FAKE_USERS;
+import static com.glecun.farmergameapi.domain.entities.FakeUser.getMaxCapacity;
 import static com.glecun.farmergameapi.domain.entities.FakeUser.nbOfZoneFakeUsersTake;
 
 @Service
@@ -47,12 +50,26 @@ public class ResolveSales {
                     .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo, nbTotalFarmer))
                     .collect(Collectors.toList());
 
-            int nbHarvestableNotSold = nbTotalHarvestable - onSaleSeedConcerned.demand.nbDemand;
+            int nbHarvestableNotSold = nbTotalHarvestable - calculateNbDemand(onSaleSeedConcerned.demand.demandType, seedEnum);
             userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned, nbOfZoneFakeUserTakes);
 
             userInfoPort.saveAll(userInfosToUpdate);
 
         }
+    }
+
+    public int calculateNbDemand(DemandType demandType, SeedEnum seedEnum) {
+        var nowMinusMinGrowthTime = LocalDateTime.now(ZoneOffset.UTC).minusSeconds((long) (seedEnum.seed.growthTime.minGrowthTime * 60) + 5);
+        Integer usersZoneCapacity = userInfoPort.findAll().stream()
+              .filter(userInfo -> userInfo.hasUnlockedSeed(seedEnum))
+              .filter(userInfo -> userInfo.lastTimePlant.isAfter(nowMinusMinGrowthTime))
+              .map(userInfo -> userInfo.getMaxNbOfZoneCapacityForThisSeed(seedEnum))
+              .reduce(0, Integer::sum);
+        Integer fakePlayersZoneCapacity = 0;
+        if (fakeUserUsed) {
+            fakePlayersZoneCapacity = IntStream.range(0, NB_OF_FAKE_USERS).map(fakeUserInt -> getMaxCapacity()).reduce(0, Integer::sum);
+        }
+        return Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)demandType.percentOfNbZones/100)) ;
     }
 
     private static class HarvestableZoneToUpdate {
@@ -111,6 +128,8 @@ public class ResolveSales {
                 .map(userInfo -> userInfo.harvestableZones).stream().flatMap(List::stream)
                 .map(HarvestableZone::getHarvestablePlanted).flatMap(Optional::stream)
                 .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
+                .filter(harvestablePlanted -> harvestablePlanted.getInfoSale().isEmpty())
+                .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.canBeSell())
                 .findFirst()
                 .map(harvestablePlanted -> harvestablePlanted.seedsPlanted)
                 .orElseThrow();
@@ -148,6 +167,7 @@ public class ResolveSales {
                     .map(harvestableZone ->
                             harvestableZone.getHarvestablePlanted()
                                     .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.seedEnum == seedEnum)
+                                    .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.willBeSoldDate == onSaleSeedConcerned.willBeSoldDate)
                                     .filter(harvestablePlanted -> harvestablePlanted.getInfoSale().map(infoSale -> infoSale.nbHarvestableSold > 0).orElse(false))
                                     .stream().findAny()
                                     .map(harvestablePlanted -> {

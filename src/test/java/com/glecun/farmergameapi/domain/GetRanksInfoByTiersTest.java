@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +43,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("2", "greg2@mdr.fr", 0, new ProfitsByTiers(500,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -52,7 +54,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("3", "greg3@mdr.fr", 0, new ProfitsByTiers(400,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -63,7 +65,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("4", "greg4@mdr.fr", 0, new ProfitsByTiers(3000,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -74,7 +76,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("5", "greg5@mdr.fr", 0, new ProfitsByTiers(200,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -85,7 +87,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("6", "greg6@mdr.fr", 0, new ProfitsByTiers(50,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -96,7 +98,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("7", "greg7@mdr.fr", 0, new ProfitsByTiers(5000,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -107,7 +109,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("8", "greg8@mdr.fr", 0, new ProfitsByTiers(2,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -118,7 +120,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 2),
                                 new ProfitByTier(TierEnum.TIER_7, 0)
                         )
-                ), emptyList(), Collections.emptyList()),
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC)),
                 new UserInfo("9", "greg9@mdr.fr", 0, new ProfitsByTiers(200,
                         List.of(
                                 new ProfitByTier(TierEnum.TIER_1, 0),
@@ -129,7 +131,7 @@ class GetRanksInfoByTiersTest {
                                 new ProfitByTier(TierEnum.TIER_6, 0),
                                 new ProfitByTier(TierEnum.TIER_7, 200)
                         )
-                ), emptyList(), Collections.emptyList())
+                ), emptyList(), Collections.emptyList(), LocalDateTime.now(ZoneOffset.UTC))
         ));
 
         when(userPort.findAll()).thenReturn(List.of(

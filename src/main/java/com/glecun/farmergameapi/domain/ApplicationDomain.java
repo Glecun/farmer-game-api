@@ -51,7 +51,7 @@ public class ApplicationDomain {
     }
 
     public UserInfo getUserInfo(String email) {
-        return userInfoPort.findByEmail(email).orElseGet(() -> userInfoPort.save(UserInfo.createUserInfo(email)));
+        return userInfoPort.findByEmail(email).orElseGet(() -> userInfoPort.save(UserInfo.createUserInfo(email, now)));
     }
 
     public UserInfo plantInAZone(HarvestableZoneType harvestableZoneType, SeedEnum seedEnum , User user) {

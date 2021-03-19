@@ -25,15 +25,11 @@ public class GenerateMarketInfos {
 
     private final MarketInfoPort marketInfoPort;
     private final GetCurrentMarketInfo getCurrentMarketInfo;
-    private final UserInfoPort userInfoPort;
-
-    private Supplier<DemandType> randomizeDemandTypeSupplier = this::randomizeDemandType;
 
     @Autowired
-    public GenerateMarketInfos(MarketInfoPort marketInfoPort, GetCurrentMarketInfo getCurrentMarketInfo, UserInfoPort userInfoPort) {
+    public GenerateMarketInfos(MarketInfoPort marketInfoPort, GetCurrentMarketInfo getCurrentMarketInfo) {
         this.marketInfoPort = marketInfoPort;
         this.getCurrentMarketInfo = getCurrentMarketInfo;
-        this.userInfoPort = userInfoPort;
     }
 
     public void execute(GrowthTime growthTime){
@@ -41,7 +37,7 @@ public class GenerateMarketInfos {
                 .filter(seedEnum -> seedEnum.seed.hasGrowthTime(growthTime))
                 .map(seedEnum ->
                         {
-                            Demand demand = randomizeDemand(seedEnum);
+                            Demand demand = new Demand(randomizeDemandType(), 0);
                             return OnSaleSeed.builder()
                                 .seedEnum(seedEnum)
                                 .buyPrice(seedEnum.seed.randomizeBuyPrice())
@@ -63,16 +59,6 @@ public class GenerateMarketInfos {
         List<OnSaleSeed> onSaleSeeds = Stream.concat(onSaleSeedsToUpdate.stream(), onSaleSeedsToKeep.stream()).collect(Collectors.toList());
 
         marketInfoPort.save(new MarketInfo(null, onSaleSeeds, LocalDateTime.now(ZoneOffset.UTC)));
-    }
-
-    Demand randomizeDemand(SeedEnum seedEnum) {
-        DemandType randomDemandType = randomizeDemandTypeSupplier.get();
-        Integer usersZoneCapacity = userInfoPort.findAll().stream()
-                .filter(userInfo -> userInfo.hasUnlockedSeed(seedEnum))
-                .map(userInfo -> userInfo.getMaxNbOfZoneCapacityForThisSeed(seedEnum))
-                .reduce(0, Integer::sum);
-        Integer fakePlayersZoneCapacity = IntStream.range(0, NB_OF_FAKE_USERS).map(fakeUserInt -> getMaxCapacity()).reduce(0, Integer::sum);
-        return new Demand(randomDemandType,  Math.round((usersZoneCapacity+fakePlayersZoneCapacity) * ((float)randomDemandType.percentOfNbZones/100)));
     }
 
     DemandType randomizeDemandType() {
