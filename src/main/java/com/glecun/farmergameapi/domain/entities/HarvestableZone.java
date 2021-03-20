@@ -39,6 +39,13 @@ public class HarvestableZone {
         return new HarvestableZone(harvestableZoneType, harvestablePlanted, isLocked);
     }
 
+    public HarvestableZone SetOnSaleSeed(OnSaleSeed onSaleSeed) {
+        HarvestablePlanted newHarvestablePlanted = getHarvestablePlanted()
+                .map(harvestablePlanted -> harvestablePlanted.setSeedsPlanted(onSaleSeed))
+                .orElseThrow();
+        return new HarvestableZone(harvestableZoneType, newHarvestablePlanted, isLocked);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

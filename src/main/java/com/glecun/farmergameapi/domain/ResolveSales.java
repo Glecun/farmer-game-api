@@ -89,7 +89,7 @@ public class ResolveSales {
                         .filter(harvestablePlanted -> harvestablePlanted.getInfoSale().isEmpty())
                         .filter(harvestablePlanted -> harvestablePlanted.seedsPlanted.canBeSell())
                         .map(harvestablePlanted -> new HarvestableZoneToUpdate(
-                                harvestableZone,
+                                harvestableZone.SetOnSaleSeed(onSaleSeedConcerned),
                                 new InfoSale(
                                         nbFarmer,
                                         nbTotalFarmer,
@@ -174,7 +174,7 @@ public class ResolveSales {
                                     .map(harvestablePlanted -> {
                                         InfoSale infoSale = harvestableZone.getHarvestablePlanted().map(HarvestablePlanted::getInfoSale).flatMap(Function.identity()).orElseThrow();
                                         return new HarvestableZoneToUpdate(
-                                                harvestableZone,
+                                                harvestableZone.SetOnSaleSeed(onSaleSeedConcerned),
                                                 new InfoSale(
                                                         infoSale.nbFarmer,
                                                         infoSale.nbTotalFarmer,

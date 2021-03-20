@@ -19,6 +19,10 @@ public class HarvestablePlanted {
         return Optional.ofNullable(infoSale);
     }
 
+    public HarvestablePlanted setSeedsPlanted(OnSaleSeed seedsPlanted) {
+        return new HarvestablePlanted(seedsPlanted, whenPlanted, infoSale);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
