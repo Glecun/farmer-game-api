@@ -62,6 +62,11 @@ public class OnSaleSeed {
         return willBeSoldDate.isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(20));
     }
 
+    public OnSaleSeed SetNbDemand(int nbDemand) {
+        Demand demand = new Demand(this.demand.demandType, nbDemand);
+        return new OnSaleSeed(seedEnum, buyPrice, sellPrice, demand, onSaleDate, willBeSoldDate);
+    }
+
     public static class Builder {
         private SeedEnum seedEnum;
         private int buyPrice;

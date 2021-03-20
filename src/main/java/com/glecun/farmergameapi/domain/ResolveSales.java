@@ -39,7 +39,8 @@ public class ResolveSales {
         List<UserInfo> userConcerned = getUsersWhoPlantedAtLeastOneHarvestable(seedEnum);
 
         if (!userConcerned.isEmpty()) {
-            OnSaleSeed onSaleSeedConcerned = getOnSaleSeedConcerned(seedEnum, userConcerned);
+            OnSaleSeed onSaleSeedConcernedWithDemandIncomplete = getOnSaleSeedConcerned(seedEnum, userConcerned);
+            OnSaleSeed onSaleSeedConcerned = onSaleSeedConcernedWithDemandIncomplete.SetNbDemand(calculateNbDemand(onSaleSeedConcernedWithDemandIncomplete.demand.demandType, seedEnum));
             long nbOfFakeUserInvolved = randomizeNbFakePlayers.apply(onSaleSeedConcerned.demand);
             int nbOfZoneFakeUserTakes = fakeUserUsed ? nbOfZoneFakeUsersTake(nbOfFakeUserInvolved) : 0;
             int nbTotalHarvestable = getNbTotalHarvestable(seedEnum, userConcerned) + nbOfZoneFakeUserTakes;
@@ -50,7 +51,7 @@ public class ResolveSales {
                     .map(userInfo -> getUserInfoToSave(seedEnum, onSaleSeedConcerned, nbTotalHarvestable, nbFarmer, userInfo, nbTotalFarmer))
                     .collect(Collectors.toList());
 
-            int nbHarvestableNotSold = nbTotalHarvestable - calculateNbDemand(onSaleSeedConcerned.demand.demandType, seedEnum);
+            int nbHarvestableNotSold = nbTotalHarvestable - onSaleSeedConcerned.demand.nbDemand;;
             userInfosToUpdate = maybeReduceSales(userInfosToUpdate, nbHarvestableNotSold, seedEnum, onSaleSeedConcerned, nbOfZoneFakeUserTakes);
 
             userInfoPort.saveAll(userInfosToUpdate);
