@@ -39,9 +39,9 @@ public class HarvestableZone {
         return new HarvestableZone(harvestableZoneType, harvestablePlanted, isLocked);
     }
 
-    public HarvestableZone SetOnSaleSeed(OnSaleSeed onSaleSeed) {
+    public HarvestableZone SetOnSaleSeed(OnSaleSeed newOnSaleSeed) {
         HarvestablePlanted newHarvestablePlanted = getHarvestablePlanted()
-                .map(harvestablePlanted -> harvestablePlanted.setSeedsPlanted(onSaleSeed))
+                .map(harvestablePlanted -> harvestablePlanted.setSeedsPlanted(newOnSaleSeed))
                 .orElseThrow();
         return new HarvestableZone(harvestableZoneType, newHarvestablePlanted, isLocked);
     }

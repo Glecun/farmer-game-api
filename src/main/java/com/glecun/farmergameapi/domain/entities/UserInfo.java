@@ -83,12 +83,13 @@ public class UserInfo {
                 );
     }
 
-    public UserInfo SetInfoSale(HarvestableZone harvestableZoneToUpdate, InfoSale infoSaleToReplace) {
+    public UserInfo SetInfoSaleAndSeedPlantedOfZone(HarvestableZone harvestableZoneToUpdate, InfoSale infoSaleToReplace) {
+        HarvestablePlanted harvestablePlantedToUpdate = harvestableZoneToUpdate.getHarvestablePlanted().orElseThrow();
         List<HarvestableZone> newHarvestablesZones = harvestableZones.stream().map(harvestableZone -> {
             if (harvestableZone.hasType(harvestableZoneToUpdate.harvestableZoneType)) {
                 return new HarvestableZone(
                         harvestableZone.harvestableZoneType,
-                        harvestableZone.getHarvestablePlanted().map(harvestablePlanted -> new HarvestablePlanted(harvestablePlanted.seedsPlanted, harvestablePlanted.whenPlanted, infoSaleToReplace)).orElseThrow(),
+                        harvestableZone.getHarvestablePlanted().map(harvestablePlanted -> new HarvestablePlanted(harvestablePlantedToUpdate.seedsPlanted, harvestablePlanted.whenPlanted, infoSaleToReplace)).orElseThrow(),
                         harvestableZone.isLocked
                 );
             }

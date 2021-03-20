@@ -61,11 +61,11 @@ class ResolveSalesTest {
         verify(userInfoPort).saveAll(userInfoCaptor.capture());
         List<UserInfo> value = userInfoCaptor.getValue();
         assertThat(value).containsExactlyInAnyOrder(
-                new UserInfo("1", "greg.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed, now,
+                new UserInfo("1", "greg.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed.SetNbDemand(109), now,
                         new InfoSale(3, 15, 36, 12, true, 36, 12)), false), new HarvestableZone(ZONE_5_TIER_1, null, false)), singletonList(TierEnum.TIER_1), now),
-                new UserInfo("2", "greg2.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_1_TIER_1, new HarvestablePlanted(onSaleSeed, now,
+                new UserInfo("2", "greg2.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_1_TIER_1, new HarvestablePlanted(onSaleSeed.SetNbDemand(109), now,
                         new InfoSale(3, 15, 36, 12, true, 36, 12)), false), new HarvestableZone(ZONE_5_TIER_1, null, false)), singletonList(TierEnum.TIER_1), now),
-                new UserInfo("3", "greg3.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed, now,
+                new UserInfo("3", "greg3.lol@mdr.fr", 200, null, of(new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed.SetNbDemand(109), now,
                         new InfoSale(3, 15, 36, 12, true, 36, 12)), false), new HarvestableZone(ZONE_5_TIER_1, null, false)), singletonList(TierEnum.TIER_1), now)
         );
     }
@@ -118,7 +118,7 @@ class ResolveSalesTest {
         assertThat(value).containsExactlyInAnyOrder(
                 new UserInfo("2", "greg2.lol@mdr.fr", 200, null, of(
                         new HarvestableZone(ZONE_1_TIER_1, new HarvestablePlanted(onSaleSeedBefore, now, new InfoSale(10, 2, 10,10,true,10,10)), false),
-                        new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed, now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false)
+                        new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed.SetNbDemand(25), now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false)
                 ), singletonList(TierEnum.TIER_1), now)
         );
     }
@@ -149,7 +149,7 @@ class ResolveSalesTest {
         assertThat(value.get(0)).isEqualTo(
                 new UserInfo("2", "greg2.lol@mdr.fr", 200, null, of(
                         new HarvestableZone(ZONE_1_TIER_1, new HarvestablePlanted(onSaleSeed, now, null), false),
-                        new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed2, now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false),
+                        new HarvestableZone(ZONE_2_TIER_1, new HarvestablePlanted(onSaleSeed2.SetNbDemand(62), now, new InfoSale(1, 11, 12, 12, true, 36, 12)), false),
                         new HarvestableZone(ZONE_4_TIER_1, null, false),
                         new HarvestableZone(ZONE_5_TIER_1, null, false)
                 ), singletonList(TierEnum.TIER_1), now)

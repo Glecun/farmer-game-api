@@ -103,7 +103,7 @@ public class ResolveSales {
                 .flatMap(Optional::stream)
                 .reduce(
                     userInfo,
-                    (userInfo1, harvestableZoneToUpdate) -> userInfo1.SetInfoSale(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale),
+                    (userInfo1, harvestableZoneToUpdate) -> userInfo1.SetInfoSaleAndSeedPlantedOfZone(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale),
                     (userInfo1, userInfo2) -> userInfo1
                 );
     }
@@ -190,7 +190,7 @@ public class ResolveSales {
                     .flatMap(Optional::stream)
                     .findAny()
                     .orElseThrow();
-            var userInfoToUpdate = randomUserSelected.SetInfoSale(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale);
+            var userInfoToUpdate = randomUserSelected.SetInfoSaleAndSeedPlantedOfZone(harvestableZoneToUpdate.harvestableZone, harvestableZoneToUpdate.infoSale);
 
             updatedUserInfosToUpdate =  updatedUserInfosToUpdate.stream().map(userInfo -> {
                 if (userInfo.id.equals(userInfoToUpdate.id)) {

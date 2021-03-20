@@ -19,8 +19,8 @@ public class HarvestablePlanted {
         return Optional.ofNullable(infoSale);
     }
 
-    public HarvestablePlanted setSeedsPlanted(OnSaleSeed seedsPlanted) {
-        return new HarvestablePlanted(seedsPlanted, whenPlanted, infoSale);
+    public HarvestablePlanted setSeedsPlanted(OnSaleSeed newSeedsPlanted) {
+        return new HarvestablePlanted(newSeedsPlanted, whenPlanted, infoSale);
     }
 
     @Override
